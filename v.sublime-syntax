@@ -9,67 +9,30 @@ first_line_match: ^\b(Module|#!.*/v)\b
 foldingStartMarker: \b(const \(|\[|{)\b$
 foldingStopMarker: ^\s*(}|\]|\))$
 variables:
-  re_keywords: \b(enum|interface|go|goto|in|or|none|return)\b
-  re_primitive: \b(bool|string|rune|byteptr|voidptr)\b
-  re_numeric: \b(byte|i(?:8|16|nt|64|128)|u(?:16|32|64|128)|f(?:32|64))\b
-  re_type: (?:{{re_primitive}}|{{re_numeric}}|(\w+))
+  re_keywords: \b(enum|interface|go|goto|in|or|none|type)\b
+
+  re_type_primitive: \b(bool|string|rune|byteptr|voidptr)\b
+  re_type_numeric: \b(byte|i(?:8|16|nt|64|128)|u(?:16|32|64|128)|f(?:32|64))\b
+  re_type: (?:{{re_type_primitive}}|{{re_type_numeric}}|(\w+))
 
   re_comma: \s?,\s?
+  re_number: \b(-)?[0-9]+(\.[0-9]+)*\b
   re_pair: (\w+)\s+(\w+)
 
-  re_param_typed: (\w+)\s+{{re_type}}
+  re_param_typed: (\w+)\s+(?:\[\])*{{re_type}}
   re_param_list: (\w+)(?:(?:{{re_comma}})(\w+))?
   re_param_list_typed: '{{re_param_list}}\s+{{re_type}}'
   re_param_multi: '{{re_param_list_typed}}(?:{{re_comma}}{{re_param_list_typed}})'
 
 contexts:
   main:
-    - include: __basics
+    - include: __comments
+    - include: __quotes
+    - include: __statements
 
-    - match: \b(module)\b\s+(\w+)
-      captures:
-        1: keyword.declaration.namespace.v
-        2: variable.other.namespace.v
+    - match: \b{{re_keywords}}\b
+      scope: keyword.v
 
-    - match: import
-      scope: keyword.control.import.v
-      push: import__
-
-    - match: \bstruct\b
-      scope: keyword.declaration.struct.v
-      push: struct__
-
-    - match: \b(pub\s+)?(fn)\b
-      captures:
-        1: storage.modifier.v
-        2: keyword.declaration.function.v
-      push: fn__
-
-    # - match: \b{{re_keywords}}\b
-    #   scope: keyword.v
-
-    # - match: \s*(\w+)\s+(\w+)$
-    #   captures:
-    #     1: variable.other.v
-    #     2: storage.type.v
-
-    # - match: type
-    #   scope: keyword.control.type.v
-
-    # - match: \b(pub|mut|const|var)\b
-    #   scope: storage.modifier.v
-
-    # - match: \b{{re_primitive}}\b
-    #   scope: storage.type.primitive.v
-
-    # - match: \b{{re_numeric}}\b
-    #   scope: storage.type.numeric.v
-
-    # - match: \b(if|else|for)\b
-    #   scope: keyword.control.v
-
-    # - match: \b(match|defer|break|continue)\b
-    #   scope: keyword.control.flow.v
 
   __comments:
     - match: //
@@ -97,7 +60,7 @@ contexts:
 
 
   __constants:
-    - match: \b(-)?[0-9]+(.[0-9]+)*\b
+    - match: '{{re_number}}'
       scope: constant.numeric.v
     - match: \b(true|false|[A-Z]+)\b
       scope: constant.language.v
@@ -127,87 +90,187 @@ contexts:
       pop: true
 
 
-  __basics:
-    - include: __comments
-    - include: __constants
-    - include: __quotes
 
+  # STATEMENTS
 
+  # __flow:
+  #   - include: __flow_if
+  #   - include: __flow_for
 
+  # __flow_if:
+  #   - match: \bif\b
+  #     scope: keyword.control.if.v
+  #     set:
+  #       - meta_scope: flow.if
+  #       - match: \{
+  #         push:
+  #           - meta_scope: flow.if.body
+  #           - include: __flow
+  #           - include: __return
+  #           - match: \}
+  #             set:
+  #               - match: \belse\b
+  #                 scope: keyword.control.else.v
+  #                 push:
+  #                   - meta_scope: else
+  #                   -
+  #               - match: \}
+  #                 pop: true
+  #       - match: $
+  #         pop: true
+  #   - match: $
+  #     pop: true
 
-  import__:
-    - meta_scope: import
-    - match: (\w+)(?:\s+\b(as)\b\s+(\w+))?
+  # __flow_for:
+  #   - match: \bfor\b
+  #     scope: keyword.control.for.v
+  #     set:
+  #       - meta_scope: flow.for
+  #       - match: \{
+  #         push:
+  #           - meta_scope: flow.for.body
+  #           - match: \}
+  #             pop: true
+  #   - match: $
+  #     pop: true
+
+  __function:
+    - match: \b(pub\s+)?(fn)\b
       captures:
-        1: variable.other.namespace.v
-        2: keyword.declaration.alias.v
-        3: variable.other.namespace.alias.v
-      pop: true
-    - match: $
-      pop: true
-
-  struct__:
-    - meta_scope: struct
-    - match: (\w+)
-      scope: entity.name.type.v
-    - match: \{
-      push: struct__body
-    - match: $
-      pop: true
-
-  struct__body:
-    - meta_scope: struct.body
-    - include: __basics
-    - include: infer_type_single
-    - match: (pub|mut)
-      scope: storage.modifier.v
-    - match: \}
-      pop: true
-
-  fn__:
-    - meta_scope: function
-    - match: \(
-      push:
-        - meta_scope: function.target
-        - include: infer_type_single
-        - match: \)
-          pop: true
-    - match: \b[a-z_]+\b
-      scope: entity.name.function.v
-      push:
-        - match: \(
-          set:
-            - meta_scope: function.params
-            - include: infer_type_multi
-            - match: \)
-              pop: true
-    - match: \w+
-      scope: entity.name.type.v
+        1: storage.modifier.v
+        2: keyword.declaration.function.v
       set:
         - meta_scope: function
-        - match: \{
-          set:
-          - meta_scope: function.body
-          - include: __basics
-          - include: __return
-          - match: \}
-            pop: true
-
-  __return:
-    - match: return
-      scope: keyword.return.v
-      push:
-        - meta_scope: return
-        - match: \{
+        - match: \(
           push:
-            - meta_scope: return.body
-            - match: \}
+            - meta_scope: function.target
+            - include: infer_type_single
+            - match: \)
+              pop: true
+        - match: \b[a-z_]+\b
+          scope: entity.name.function.v
+          set:
+            - match: \(
+              push:
+                - meta_scope: function.params
+                - include: infer_type_multi
+                - match: \)
+                  pop: true
+            - match: \w+
+              scope: entity.name.type.v
+              set:
+                - match: \{
+                  push:
+                    - meta_scope: function.body
+                    - include: __comments
+                    # - include: __flow
+                    - include: __return
+                    - match: \}
+                      pop: true
+                - match: $
+                  pop: true
+        - match: $
+          pop: true
+
+  __import:
+    - match: \bimport\b
+      scope: keyword.declaration.import.v
+      set:
+        - meta_scope: import
+        - match: \w+
+          scope: variable.other.namespace.v
+          set:
+            - match: \bas\b
+              scope: keyword.other.alias.v
+              push:
+                - meta_scope: import.alias
+                - match: '[a-z]+'
+                  scope: variable.other.namespace.alias.v
+                  pop: true
+            - match: $
               pop: true
         - match: $
           pop: true
 
+  __module:
+    - match: \bmodule\b
+      scope: keyword.declaration.namespace.v
+      set:
+        - meta_scope: module
+        - match: \w+
+          scope: variable.other.namespace.v
+          pop: true
+    - match: $
+      pop: true
+
+  __struct:
+    - match: \bstruct\b
+      scope: keyword.declaration.struct.v
+      set:
+        - meta_scope: struct
+        - match: \w+
+          scope: entity.name.type.v
+          set:
+            - match: \{
+              set:
+                - meta_scope: struct.body
+                - include: __comments
+                - include: infer_type_single
+                - match: (pub|mut)
+                  scope: storage.modifier.v
+                - match: \}
+                  pop: true
+            - match: $
+              pop: true
+        - match: $
+          pop: true
+
+  __statements:
+    # - include: __flow
+    - include: __function
+    - include: __import
+    - include: __module
+    - include: __struct
+
+
+  # FLOW
+
+  # - match: \b(if|else|for)\b
+  #   scope: keyword.control.v
+
+  # - match: \b(pub|mut|const|var)\b
+  #   scope: storage.modifier.v
+
+  # - match: \b(match|defer|break|continue)\b
+  #   scope: keyword.control.flow.v
+
+
+  # INNER
+
+  __return:
+    - match: return
+      scope: keyword.control.return.v
+      set:
+        - meta_scope: return
+        - include: __constants
+        - match: \w+
+          set:
+            - meta_scope: return.value
+            - match: $
+              pop: true
+        # - match: \{
+        #   push:
+        #     - meta_scope: return.body
+        #     - match: \}
+        #       pop: true
+        - match: $
+          pop: true
+
+
+  # UTILS
+
   infer_type_single:
-    - match: '(?:(mut)\s+)?{1}{{re_param_typed}}'
+    - match: '(?:\b(mut)\b\s+)?{{re_param_typed}}'
       captures:
         1: storage.modifier.v
         2: variable.parameter.v
