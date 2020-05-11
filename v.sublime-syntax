@@ -265,18 +265,48 @@ contexts:
   __return:
     - match: return
       scope: keyword.control.return.v
-      set:
+      push:
         - meta_scope: return
         - include: __constants
-        - match: \w+
-          set:
-            - meta_scope: return.value
-            - match: $
+        - match: '(?:{{re_name_regular}}\.)?{{re_name_regular}}\s*\('
+          captures:
+            1: entity.object.v
+            2: entity.function.name.v
+          push:
+            # param list
+            - match: '{{re_name_regular}}'
+              scope: variable.parameter.v
+            - match: \)
               pop: true
-        # - match: \{
-        #   push:
-        #     - meta_scope: return.body
-        #     - match: \}
+        - match: '(?:{{re_name_regular}}\.)+{{re_name_regular}}'
+          captures:
+            1: entity.object.v
+            2: entity.object.property.v
+        - match: '{{re_name_regular}}\s*\('
+          captures:
+            1: entity.object.v
+            2: entity.function.name.v
+          push:
+            # param list
+            - match: '{{re_name_regular}}'
+              scope: variable.parameter.v
+            - match: \)
+              pop: true
+        - match: '{{re_name_regular}}'
+          scope: variable.other
+        - include: infer_user_type
+          push: __struct_constructor
+
+        #     - meta_scope: return.value
+        #     # a struct or... ?
+        #     - match: \{
+        #       push:
+        #         - meta_scope: return.body
+        #         - include: colon_assign
+        #         - include: __comments
+        #         - match: \}
+        #           pop: true
+        #     - match: $
         #       pop: true
         - match: $
           pop: true
