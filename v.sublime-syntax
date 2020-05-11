@@ -152,6 +152,41 @@ contexts:
   #   - match: $
   #     pop: true
 
+  colon_assign:
+    - match: '{{re_const_list}}'
+      scope: constant.other.v
+      push:
+        - match: ':'
+          scope: keyword.operator.assign.v
+          push: __assign_const
+        - match: $
+          pop: true
+    - match: '{{re_param_list}}'
+      scope: variable.parameter.v
+      push:
+        - match: ':'
+          scope: keyword.operator.assign.v
+          push: __assign_other
+        - match: $
+          pop: true
+
+  short_assign:
+    - match: '{{re_const_list}}'
+      scope: constant.other.v
+      push:
+        - match: '='
+          scope: keyword.operator.assign.v
+          push: __assign_const
+        - match: $
+          pop: true
+    - match: '{{re_param_list}}'
+      scope: variable.parameter.v
+      push:
+        - match: '='
+          scope: keyword.operator.assign.v
+          push: __assign_other
+        - match: $
+          pop: true
   __function:
     - match: (\bpub\b\s+)?(\bfn\b)
       captures:
