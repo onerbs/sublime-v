@@ -4,31 +4,43 @@ name: V
 scope: source.v
 file_extensions:
   - v
+  - vv
   - vsh
-first_line_match: ^\b(Module|#!.*/v)\b
-foldingStartMarker: \b(const \(|\[|{)\b$
-foldingStopMarker: ^\s*(}|\]|\))$
+first_line_match: ^(\bModule\b|#!\S*/v)
+foldingStartMarker: '^.*[{\[\(]$'
+foldingStopMarker: '^[)]}]$'
 variables:
   re_keywords: \b(enum|interface|go|goto|in|or|none|type)\b
 
-  re_type_primitive: \b(bool|string|rune|byteptr|voidptr)\b
-  re_type_numeric: \b(byte|i(?:8|16|nt|64|128)|u(?:16|32|64|128)|f(?:32|64))\b
-  re_type: (?:{{re_type_primitive}}|{{re_type_numeric}}|(\w+))
+  re_name_function: ([a-z][a-z\d_]*)
+  re_name_type: ([A-Z][a-zA-Z]*)
+
+  re_type_primitive: (bool|string|rune|byteptr|voidptr)
+  re_type_numeric: (byte|i(?:8|16|nt|64|128)|u(?:16|32|64|128)|f(?:32|64))
+
+  re_type_list: \b(?:{{re_type_primitive}}|{{re_type_numeric}}|{{re_name_type}}|([a-z][a-zA-Z0-9_]*))\b
+
+  re_number: -?\d+(?:\.\d+)*
+  re_escaped: \\(?:[tvnrbfae]|\d{3}|x\h{7}|x\h{2})
 
   re_comma: \s?,\s?
-  re_number: \b(-)?[0-9]+(\.[0-9]+)*\b
   re_pair: (\w+)\s+(\w+)
 
-  re_param_typed: (\w+)\s+(?:\[\])*{{re_type}}
+  re_param_typed: (\w+)\s.+{{re_type_list}}
   re_param_list: (\w+)(?:(?:{{re_comma}})(\w+))?
-  re_param_list_typed: '{{re_param_list}}\s+{{re_type}}'
+  re_param_list_typed: '{{re_param_list}}\s+{{re_type_list}}'
   re_param_multi: '{{re_param_list_typed}}(?:{{re_comma}}{{re_param_list_typed}})'
 
 contexts:
   main:
     - include: __comments
     - include: __quotes
-    - include: __statements
+
+    # - include: __flow
+    - include: __function
+    - include: __import
+    - include: __module
+    - include: __struct
 
     - match: \b{{re_keywords}}\b
       scope: keyword.v
@@ -62,7 +74,7 @@ contexts:
   __constants:
     - match: '{{re_number}}'
       scope: constant.numeric.v
-    - match: \b(true|false|[A-Z]+)\b
+    - match: \b(true|false)\b
       scope: constant.language.v
 
 
@@ -76,18 +88,21 @@ contexts:
 
   double_quoted_string:
     - meta_scope: string.quoted.double.v
-    - match: \\[a-z]
-      scope: constant.character.escape.v
+    - include: escaped_char
     - match: \"
       scope: punctuation.definition.string.end.v
       pop: true
+
   single_quoted_string:
     - meta_scope: string.quoted.single.v
-    - match: \\[a-z]
-      scope: constant.character.escape.v
+    - include: escaped_char
     - match: \'
       scope: punctuation.definition.string.end.v
       pop: true
+
+  escaped_char:
+    - match: '{{re_escaped}}'
+      scope: constant.character.escape.v
 
 
 
@@ -135,42 +150,48 @@ contexts:
   #     pop: true
 
   __function:
-    - match: \b(pub\s+)?(fn)\b
+    - match: (\bpub\b\s+)?(\bfn\b)
       captures:
         1: storage.modifier.v
         2: keyword.declaration.function.v
       set:
         - meta_scope: function
         - match: \(
+          scope: punctuation.function.target.begin.v
           push:
             - meta_scope: function.target
-            - include: infer_type_single
+            - include: infer_type_named
             - match: \)
+              scope: punctuation.function.target.end.v
               pop: true
         - match: \b[a-z_]+\b
           scope: entity.name.function.v
           set:
             - match: \(
+              scope: punctuation.function.params.begin.v
               push:
                 - meta_scope: function.params
                 - include: infer_type_multi
                 - match: \)
+                  scope: punctuation.function.params.end.v
                   pop: true
-            - match: \w+
-              scope: entity.name.type.v
-              set:
-                - match: \{
-                  push:
-                    - meta_scope: function.body
-                    - include: __comments
-                    # - include: __flow
-                    - include: __return
-                    - match: \}
-                      pop: true
-                - match: $
+            - include: infer_type
+            - match: \{
+              scope: punctuation.function.body.begin.v
+              push:
+                - meta_scope: function.body
+                - include: __comments
+                # - include: __flow
+                - include: __return
+                - match: \}
+                  scope: punctuation.function.body.end
                   pop: true
+            - match: $
+              pop: true
         - match: $
           pop: true
+    - match: $
+      pop: true
 
   __import:
     - match: \bimport\b
@@ -178,14 +199,14 @@ contexts:
       set:
         - meta_scope: import
         - match: \w+
-          scope: variable.other.namespace.v
+          scope: entity.name.namespace.v
           set:
             - match: \bas\b
               scope: keyword.other.alias.v
               push:
                 - meta_scope: import.alias
                 - match: '[a-z]+'
-                  scope: variable.other.namespace.alias.v
+                  scope: entity.name.namespace.alias.v
                   pop: true
             - match: $
               pop: true
@@ -198,7 +219,7 @@ contexts:
       set:
         - meta_scope: module
         - match: \w+
-          scope: variable.other.namespace.v
+          scope: entity.name.namespace.v
           pop: true
     - match: $
       pop: true
@@ -208,29 +229,23 @@ contexts:
       scope: keyword.declaration.struct.v
       set:
         - meta_scope: struct
-        - match: \w+
-          scope: entity.name.type.v
+        - include: infer_type
           set:
             - match: \{
-              set:
+              scope: punctuation.block.begin.v
+              push:
                 - meta_scope: struct.body
                 - include: __comments
-                - include: infer_type_single
-                - match: (pub|mut)
-                  scope: storage.modifier.v
+                - include: infer_type_named
+                # - match: '((pub\s+)?mut|(mut\s+)?pub)'
+                #   scope: storage.modifier.v
                 - match: \}
                   pop: true
-            - match: $
-              pop: true
-        - match: $
+        - match: \}
           pop: true
+    - match: $
+      pop: true
 
-  __statements:
-    # - include: __flow
-    - include: __function
-    - include: __import
-    - include: __module
-    - include: __struct
 
 
   # FLOW
@@ -269,14 +284,31 @@ contexts:
 
   # UTILS
 
-  infer_type_single:
-    - match: '(?:\b(mut)\b\s+)?{{re_param_typed}}'
+  infer_type:
+    - match: '{{re_type_list}}'
       captures:
-        1: storage.modifier.v
-        2: variable.parameter.v
-        3: storage.type.primitive.v
-        4: storage.type.numeric.v
-        5: entity.name.type.v
+        1: storage.type.primitive.v
+        2: storage.type.numeric.v
+        3: entity.name.type.v
+        4: storage.type.other.v
+
+  infer_type_named:
+    - match: '(\w+)\s+{{re_type_list}}'
+      captures:
+        1: variable.parameter.v
+        2: storage.type.primitive.v
+        3: storage.type.numeric.v
+        4: entity.name.type.v
+        5: storage.type.other.v
+
+  infer_type_single:
+    - match: '{{re_param_typed}}'
+      captures:
+        1: variable.parameter.v
+        2: storage.type.primitive.v
+        3: storage.type.numeric.v
+        4: entity.name.type.v
+        5: storage.type.other.v
 
   infer_type_multi:
     - match: (?:(mut)\s+)?{1}{{re_param_list_typed}}
@@ -287,8 +319,10 @@ contexts:
         4: storage.type.primitive.v
         5: storage.type.numeric.v
         6: entity.name.type.v
-        7: variable.parameter.v
+        7: storage.type.other.v
         8: variable.parameter.v
-        9: storage.type.primitive.v
-        10: storage.type.numeric.v
-        11: entity.name.type.v
+        9: variable.parameter.v
+        10: storage.type.primitive.v
+        11: storage.type.numeric.v
+        12: entity.name.type.v
+        13: storage.type.other.v
