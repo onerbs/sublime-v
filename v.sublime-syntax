@@ -270,47 +270,41 @@ contexts:
       scope: keyword.control.return.v
       push:
         - meta_scope: return
-        - include: __constants
         - match: '(?:{{re_name_regular}}\.)?{{re_name_regular}}\s*\('
+          # some.fun(
           captures:
             1: entity.object.v
             2: entity.function.name.v
           push:
             # param list
+            - include: __constants
             - match: '{{re_name_regular}}'
               scope: variable.parameter.v
             - match: \)
               pop: true
         - match: '(?:{{re_name_regular}}\.)+{{re_name_regular}}'
+          # some.val
           captures:
             1: entity.object.v
             2: entity.object.property.v
         - match: '{{re_name_regular}}\s*\('
+          # fun(
           captures:
             1: entity.object.v
             2: entity.function.name.v
           push:
             # param list
+            - include: __constants
             - match: '{{re_name_regular}}'
               scope: variable.parameter.v
             - match: \)
               pop: true
+        - include: __constants
         - match: '{{re_name_regular}}'
+          # val
           scope: variable.other
         - include: infer_user_type
-          push: __struct_constructor
-
-        #     - meta_scope: return.value
-        #     # a struct or... ?
-        #     - match: \{
-        #       push:
-        #         - meta_scope: return.body
-        #         - include: colon_assign
-        #         - include: __comments
-        #         - match: \}
-        #           pop: true
-        #     - match: $
-        #       pop: true
+          push: __struct_new
         - match: $
           pop: true
 
