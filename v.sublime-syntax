@@ -314,6 +314,14 @@ contexts:
 
   # UTILS
 
+  infer_user_type:
+    - match: '{{re_type_list}}'
+      captures:
+        1: invalid.type.v
+        2: invalid.type.v
+        3: entity.name.type.v
+        4: storage.type.other.v
+
   infer_type:
     - match: '{{re_type_list}}'
       captures:
@@ -341,7 +349,7 @@ contexts:
         5: storage.type.other.v
 
   infer_type_multi:
-    - match: (?:(mut)\s+)?{1}{{re_param_list_typed}}
+    - match: (?:(\bmut\b)\s+)?{{re_param_list_typed}}
       captures:
         1: storage.modifier.v
         2: variable.parameter.v
