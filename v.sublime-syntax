@@ -53,34 +53,34 @@ contexts:
 
   quoted_double:
     - match: \"
-      scope: string.punctuation.double.begin.v
+      scope: punctuation.string.double.begin.v
       push:
       - meta_scope: string.quoted.double.v
       - include: escaped_char
       - match: \"
-        scope: string.punctuation.double.end.v
+        scope: punctuation.string.double.end.v
         pop: true
 
   quoted_single:
     - match: \'
-      scope: string.punctuation.single.begin.v
+      scope: punctuation.string.single.begin.v
       push:
       - meta_scope: string.quoted.single.v
       - include: escaped_char
       - match: \'
-        scope: string.punctuation.single.end.v
+        scope: punctuation.string.single.end.v
         pop: true
 
   literal_char:
     - match: \`
-      scope: string.punctuation.literal.begin.v
+      scope: punctuation.string.literal.begin.v
       push:
       - match: \b\w\b
-        scope: string.other.literal.v
+        scope: string.literal.v
       - match: \b\S+\b
         scope: invalid.illegal.v
       - match: \`
-        scope: string.punctuation.literal.end.v
+        scope: punctuation.string.literal.end.v
         pop: true
 
   escaped_char:
