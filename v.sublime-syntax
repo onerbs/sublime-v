@@ -134,6 +134,49 @@ contexts:
           pop: true
 
 
+  # FLOW
+
+  # - match: \b(if|else|for)\b
+  #   scope: keyword.control.v
+
+  # - match: \b(pub|mut|const|var)\b
+  #   scope: storage.modifier.v
+
+  # - match: \b(match|defer|break|continue)\b
+  #   scope: keyword.control.flow.v
+
+  Flow:
+    - include: Flow.if
+    - include: Flow.for
+  #   - include: Flow.match
+
+  Flow.if:
+    - match: \b(if)\b
+      scope: keyword.control.if.v
+      push:
+        - meta_scope: flow.if
+        - include: Block
+        - include: Return
+        - match: \b(else)\b
+          push:
+            - meta_scope: flow.else
+            - include: Block
+            - include: Return
+            - match: $
+              pop: true
+        - match: $
+          pop: true
+
+  Flow.for:
+    - match: \b(for)\b
+      scope: keyword.control.for.v
+      push:
+        - meta_scope: flow.for
+        - include: Block
+        - match: $
+          pop: true
+
+
   # GRAMMAR
 
   Association:
@@ -167,9 +210,10 @@ contexts:
         - meta_scope: meta.block
         - include: Comments
         - include: Strings
-        - include: Block
+        - include: Flow
         - include: Return
         - include: Association
+        - include: Block
         - match: \}
           scope: punctuation.block.end
           pop: true
@@ -281,7 +325,6 @@ contexts:
   __infer_type_with_op:
     - include: Comments
     - include: Strings
-    - include: Block
     - match: '{{re_operator}}'
       captures:
         1: keyword.operator.access.v
@@ -293,6 +336,7 @@ contexts:
       pop: true
 
   __infer_type:
+    - include: Value
     - match: '(?:\s*,\s*)?{{re_types}}'
       captures:
         1: storage.modifier.v
