@@ -11,6 +11,12 @@ foldingStartMarker: '^.*[{\[\(]$'
 foldingStopMarker: '^[)]}]$'
 
 variables:
+  re_op_access: \b(in)\b
+  re_op_assign: (\:=|\:|=)
+  re_op_compare: (<=|>=|<|>)
+  re_op_other: (<<|>>|\*=|/=|&=|%=|+=|-=|\*|/|&|%|+|-)
+  re_operator: '(?:{{re_op_access}}|{{re_op_assign}}|{{re_op_compare}}|{{re_op_other}})'
+
   re__escaped: '\\([\\tvnrbfae''"]|x\h{2}|\d{,3})'
 
   re_name_regular: \b([a-z][a-z\d_]*)\b
@@ -78,6 +84,31 @@ contexts:
 
   # GRAMMAR
 
+  Association:
+    - include: Comments
+    - include: Strings
+    - match: \b([A-Z]+)\b
+      scope: constant.other.v
+      push:
+        - meta_scope: meta.infer.constant
+        - include: __infer_type_with_op
+    - match: '{{re_types}}'
+      scope: invalid.illegal.v
+      push:
+        - meta_scope: meta.infer.invalid
+        - include: __infer_type_with_op
+    - match: '{{re_name_regular}}'
+      scope: constant.other.v
+      push:
+        - meta_scope: meta.infer.variable
+        - include: __infer_type_with_op
+    - match: '{{re_name_irregular}}'
+      scope: invalid.illegal.v
+      push:
+        - meta_scope: meta.infer.variable.irregular
+        - include: __infer_type_with_op
+
+
   Comments:
     - include: comment_block
     - include: comment_line
@@ -143,3 +174,27 @@ contexts:
   escaped_char:
     - match: '{{re__escaped}}'
       scope: constant.character.escape.v
+
+
+  # INFER
+
+  __infer_type_with_op:
+    - include: Comments
+    - include: Strings
+    - match: '{{re_operator}}'
+      captures:
+        1: keyword.operator.access.v
+        2: keyword.operator.assignment.v
+        3: keyword.operator.comparation.v
+        4: keyword.operator.v
+    - include: __infer_type
+
+  __infer_type:
+    - match: '{{re_types}}'
+      captures:
+        1: storage.type.numeric.v
+        2: storage.type.primitive.v
+        3: storage.type.map.v
+        4: entity.name.other.v
+    - match: $
+      pop: true
