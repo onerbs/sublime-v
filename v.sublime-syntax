@@ -109,11 +109,17 @@ contexts:
 
 
 
-  # STATEMENTS
+  # DECLARATIONS
 
-  # __flow:
-  #   - include: __flow_if
-  #   - include: __flow_for
+  ModuleDeclaration:
+    - match: \bmodule\b
+      scope: keyword.declaration.namespace.v
+      push:
+        - meta_scope: module
+        - match: '{{re_name_package}}'
+          scope: entity.name.namespace
+        - match: $
+          pop: true
 
   # __flow_if:
   #   - match: \bif\b
@@ -256,16 +262,6 @@ contexts:
         - match: $
           pop: true
 
-  __module:
-    - match: \bmodule\b
-      scope: keyword.declaration.namespace.v
-      set:
-        - meta_scope: module
-        - match: \w+
-          scope: entity.name.namespace.v
-          pop: true
-    - match: $
-      pop: true
 
   __struct:
     - match: \bstruct\b
