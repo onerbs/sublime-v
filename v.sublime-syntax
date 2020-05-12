@@ -39,7 +39,8 @@ contexts:
 
     - include: Comments
     - include: Strings
-    # - include: Flow
+    - include: Block
+    - include: Flow
 
 
   # KEYWORDS
@@ -275,7 +276,7 @@ contexts:
     - include: __infer_type
     - match: \b([A-Z]+)\b
       scope: constant.other.v
-    - include: __infer_function
+    - include: __function
     - match: '{{re_name_package}}'
       captures:
         1: variable.other.object.v
@@ -288,14 +289,18 @@ contexts:
     - match: '{{re_name_irregular}}'
       scope: invalid.illegal.v
 
-  __infer_function:
+  __function:
+    - match: '{{re_name_regular}}\s*(\()'
+      captures:
+        1: entity.name.function.v
+        2: punctuation.function.params.begin.v
+      push: __infer_params__inside
     - match: '{{re_name_package}}\s*(\()'
       captures:
         1: variable.other.object.v
         2: entity.name.function.v
         3: punctuation.function.params.begin.v
-      push:
-        - include: __infer_params__inside
+      push: __infer_params__inside
 
   __infer_type:
     - match: '{{re_types}}'
