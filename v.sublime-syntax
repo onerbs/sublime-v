@@ -231,20 +231,25 @@ contexts:
     - match: $
       pop: true
 
-  __import:
+
+
+  # STATEMENTS
+
+  ImportStatement:
     - match: \bimport\b
       scope: keyword.declaration.import.v
-      set:
+      push:
         - meta_scope: import
-        - match: \w+
+        - match: '{{re_name_package}}'
           scope: entity.name.namespace.v
-          set:
+          push:
             - match: \bas\b
               scope: keyword.other.alias.v
-              set:
+              push:
                 - meta_scope: import.alias
-                - match: '[a-z]+'
+                - match: '{{re_name_regular}}'
                   scope: entity.name.namespace.alias.v
+                - match: $
                   pop: true
             - match: $
               pop: true
