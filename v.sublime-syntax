@@ -75,18 +75,7 @@ contexts:
             - match: '{{re_name_regular}}'
               scope: storage.type.other.v
             - include: __irregular
-            # Q: - include: Block?
-            - match: \{
-              scope: punctuation.function.body.begin.v
-              push:
-                - meta_scope: meta.function.body
-                - include: Comments
-                - include: Strings
-                # - include: Flow
-                - include: Return
-                - match: \}
-                  scope: punctuation.function.body.end
-                  pop: true
+            - include: Block
             - match: $
               pop: true
         - match: $
@@ -128,16 +117,8 @@ contexts:
       scope: keyword.declaration.struct.v
       push:
         - meta_scope: meta.struct
-        - include: infer_type
-        - match: \{
-          scope: punctuation.struct.body.begin.v
-          push:
-            - meta_scope: meta.struct.body
-            - include: Comments
-            - include: Association
-            - match: \}
-              scope: punctuation.struct.body.end.v
-              pop: true
+        - include: __infer_type
+        - include: Block
         - match: $
           pop: true
 
@@ -196,6 +177,21 @@ contexts:
       push:
         - meta_scope: meta.infer.variable.irregular
         - include: __infer_type_with_op
+
+
+  Block:
+    - match: \{
+      scope: punctuation.block.begin.v
+      push:
+        - meta_scope: meta.block
+        - include: Comments
+        - include: Strings
+        - include: Block
+        - include: Return
+        - include: Association
+        - match: \}
+          scope: punctuation.block.end
+          pop: true
 
 
   Comments:
@@ -274,6 +270,7 @@ contexts:
   __infer_type_with_op:
     - include: Comments
     - include: Strings
+    - include: Block
     - match: '{{re_operator}}'
       captures:
         1: keyword.operator.access.v
