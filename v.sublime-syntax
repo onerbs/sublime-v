@@ -56,8 +56,7 @@ contexts:
             - match: \)
               scope: punctuation.const.body.end.v
               pop: true
-        - match: $
-          pop: true
+        - include: EOL
 
   Function:
     - match: (\bpub\b\s+)?(\bfn\b)
@@ -76,10 +75,8 @@ contexts:
               scope: storage.type.other.v
             - include: __irregular
             - include: Block
-            - match: $
-              pop: true
-        - match: $
-          pop: true
+            - include: EOL
+        - include: EOL
 
   Import:
     - match: \b(import)\b
@@ -95,12 +92,9 @@ contexts:
                 - meta_scope: meta.import.alias
                 - match: '{{re_name_regular}}'
                   scope: entity.name.namespace.alias.v
-                - match: $
-                  pop: true
-            - match: $
-              pop: true
-        - match: $
-          pop: true
+                - include: EOL
+            - include: EOL
+        - include: EOL
 
   Module:
     - match: \b(module)\b
@@ -109,8 +103,7 @@ contexts:
         - meta_scope: meta.module
         - match: '{{re_name_package}}'
           scope: entity.name.namespace
-        - match: $
-          pop: true
+        - include: EOL
 
   Struct:
     - match: \b(struct)\b
@@ -119,8 +112,7 @@ contexts:
         - meta_scope: meta.struct
         - include: __infer_type
         - include: Block
-        - match: $
-          pop: true
+        - include: EOL
 
   Return:
     - match: \b(return)\b
@@ -130,8 +122,7 @@ contexts:
         - include: Constant
         - include: String
         - include: Value
-        - match: $
-          pop: true
+        - include: EOL
 
 
   # FLOW
@@ -164,8 +155,7 @@ contexts:
             - include: Return
             - match: $
               pop: true
-        - match: $
-          pop: true
+        - include: EOL
 
   Flow.for:
     - match: \b(for)\b
@@ -173,8 +163,7 @@ contexts:
       push:
         - meta_scope: flow.for
         - include: Block
-        - match: $
-          pop: true
+        - include: EOL
 
 
   # GRAMMAR
@@ -240,8 +229,7 @@ contexts:
       push:
         - meta_scope: comment.line.double-slash.v
         - include: comment_block
-        - match: $
-          pop: true
+        - include: EOL
 
 
   Strings:
@@ -322,39 +310,38 @@ contexts:
     - match: '{{re_name_irregular}}'
       scope: invalid.illegal.v
 
-  __infer_type_with_op:
-    - include: Comments
-    - include: Strings
-    - match: '{{re_operator}}'
+  __infer_function:
+    - match: '{{re_name_package}}\s*(\()'
       captures:
-        1: keyword.operator.access.v
-        2: keyword.operator.assignment.v
-        3: keyword.operator.comparation.v
-        4: keyword.operator.v
-    - include: __infer_type
-    - match: $
-      pop: true
+        1: variable.other.object.v
+        2: entity.name.function.v
+        3: punctuation.function.params.begin.v
+      push:
+        - include: __infer_params__inside
 
   __infer_type:
-    - include: Value
-    - match: '(?:\s*,\s*)?{{re_types}}'
+    - match: '{{re_types}}'
       captures:
-        1: storage.modifier.v
+        1: keyword.language.v
         2: storage.type.numeric.v
         3: storage.type.primitive.v
-        4: keyword.language.v
-        5: storage.type.map.v
-        6: entity.name.other.v
+        4: storage.type.map.v
+        5: storage.type.other.v
 
   __infer_params:
     - match: \(
       scope: punctuation.function.params.begin.v
-      push:
-        - meta_scope: meta.function.params
-        - include: __infer_type
-        - match: '{{re_name_regular}}'
-          scope: variable.parameter.v
-        - include: __irregular
-        - match: \)
-          scope: punctuation.function.params.end.v
-          pop: true
+      push: __infer_params__inside
+
+  __infer_params__inside:
+      - include: Value_min
+      - match: '{{re_name_regular}}'
+        scope: variable.parameter.v
+      - include: __irregular
+      - match: \)
+        scope: punctuation.function.params.end.v
+        pop: true
+
+  EOL:
+    - match: $
+      pop: true
