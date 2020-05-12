@@ -19,8 +19,15 @@ variables:
 
   re__escaped: '\\([\\tvnrbfae''"]|x\h{2}|\d{,3})'
 
-  re_name_regular: \b([a-z][a-z\d_]*)\b
   re_name_package: '(?:{{re_name_regular}}\.)*{{re_name_regular}}'
+  re_name_regular: \b([a-z][a-z\d_]*)\b
+  re_name_irregular: \b([A-Za-z][A-Za-z\d_]+)\b
+
+  re_type_numeric: \b(byte|u(?:16|32|64|128)|i(?:nt|16|64|128|8)|f(?:32|64))\b
+  re_type_primitive: \b(bool|byteptr|rune|string|voidptr)\b
+  re_type_class: ([A-Z][A-Za-z\d_]*)
+
+  re_types: '(?:{{re_type_numeric}}|{{re_type_primitive}}|\b(map)\b|{{re_type_class}})'
 
 contexts:
   main:
