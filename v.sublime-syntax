@@ -32,6 +32,7 @@ variables:
 contexts:
   main:
     - include: Const
+    - include: Function
     - include: Import
     - include: Module
     - include: Struct
@@ -54,6 +55,37 @@ contexts:
             - include: Association
             - match: \)
               scope: punctuation.const.body.end.v
+              pop: true
+        - match: $
+          pop: true
+
+  Function:
+    - match: (\bpub\b\s+)?(\bfn\b)
+      captures:
+        1: storage.modifier.v
+        2: keyword.declaration.function.v
+      push:
+        - meta_scope: meta.function
+        - include: __infer_params
+        - match: '{{re_name_regular}}'
+          scope: entity.name.function.v
+          push:
+            - include: __infer_params
+            - include: __infer_type
+            - include: __infer_type_plus
+            # Q: - include: Block?
+            - match: \{
+              scope: punctuation.function.body.begin.v
+              push:
+                - meta_scope: meta.function.body
+                - include: Comments
+                - include: Strings
+                # - include: Flow
+                # - include: Return
+                - match: \}
+                  scope: punctuation.function.body.end
+                  pop: true
+            - match: $
               pop: true
         - match: $
           pop: true
@@ -231,3 +263,13 @@ contexts:
       scope: storage.type.other.v
     - match: '{{re_name_irregular}}'
       scope: invalid.illegal.v
+
+  __infer_params:
+    - match: \(
+      scope: punctuation.function.params.begin.v
+      push:
+        - meta_scope: meta.function.params
+        # INFER
+        - match: \)
+          scope: punctuation.function.params.end.v
+          pop: true
