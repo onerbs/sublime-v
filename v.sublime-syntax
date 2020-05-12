@@ -81,7 +81,7 @@ contexts:
                 - include: Comments
                 - include: Strings
                 # - include: Flow
-                # - include: Return
+                - include: Return
                 - match: \}
                   scope: punctuation.function.body.end
                   pop: true
@@ -137,6 +137,37 @@ contexts:
             - match: \}
               scope: punctuation.struct.body.end.v
               pop: true
+        - match: $
+          pop: true
+
+  Return:
+    - match: \b(return)\b
+      scope: keyword.control.return.v
+      push:
+        - include: Constant
+        - include: String
+        - meta_scope: meta.return
+        # some.fun(
+        - match: '(?:{{re_name_regular}}\.)?{{re_name_regular}}\s*\('
+          captures:
+            1: entity.other.object.v
+            2: entity.name.function.v
+          push:
+            - include: Constant
+            - match: \)
+              pop: true
+        # some.val
+        - match: '(?:{{re_name_regular}}\.)+{{re_name_regular}}'
+          captures:
+            1: entity.other.object.v
+            2: entity.other.object.property.v
+        # val
+        - match: '{{re_name_regular}}'
+          scope: variable.other.v
+        - match: '{{re_name_irregular}}'
+          scope: invalid.illegal.v
+        # - include: Type.any
+        #   push: Struct.new
         - match: $
           pop: true
 
