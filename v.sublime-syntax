@@ -10,9 +10,13 @@ first_line_match: ^(\bModule\b|#!\S*/v)
 foldingStartMarker: '^.*[{\[\(]$'
 foldingStopMarker: '^[)]}]$'
 
+variables:
+  re__escaped: '\\([\\tvnrbfae''"]|x\h{2}|\d{,3})'
+
 contexts:
   main:
     - include: Comments
+    - include: Strings
 
 
   # GRAMMAR
@@ -40,3 +44,45 @@ contexts:
         - include: comment_block
         - match: $
           pop: true
+
+
+  Strings:
+    - include: quoted_double
+    - include: quoted_single
+    - include: literal_char
+
+  quoted_double:
+    - match: \"
+      scope: string.punctuation.double.begin.v
+      push:
+      - meta_scope: string.quoted.double.v
+      - include: escaped_char
+      - match: \"
+        scope: string.punctuation.double.end.v
+        pop: true
+
+  quoted_single:
+    - match: \'
+      scope: string.punctuation.single.begin.v
+      push:
+      - meta_scope: string.quoted.single.v
+      - include: escaped_char
+      - match: \'
+        scope: string.punctuation.single.end.v
+        pop: true
+
+  literal_char:
+    - match: \`
+      scope: string.punctuation.literal.begin.v
+      push:
+      - match: \b\w\b
+        scope: string.other.literal.v
+      - match: \b\S+\b
+        scope: invalid.illegal.v
+      - match: \`
+        scope: string.punctuation.literal.end.v
+        pop: true
+
+  escaped_char:
+    - match: '{{re__escaped}}'
+      scope: constant.character.escape.v
