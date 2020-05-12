@@ -215,6 +215,8 @@ contexts:
         3: keyword.operator.comparation.v
         4: keyword.operator.v
     - include: __infer_type
+    - match: $
+      pop: true
 
   __infer_type:
     - match: '{{re_types}}'
@@ -223,5 +225,9 @@ contexts:
         2: storage.type.primitive.v
         3: storage.type.map.v
         4: entity.name.other.v
-    - match: $
-      pop: true
+
+  __infer_type_plus:
+    - match: '{{re_name_regular}}'
+      scope: storage.type.other.v
+    - match: '{{re_name_irregular}}'
+      scope: invalid.illegal.v
