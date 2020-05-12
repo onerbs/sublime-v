@@ -72,7 +72,7 @@ contexts:
           scope: entity.name.function.v
           push:
             - include: __infer_params
-            - include: __infer_type
+            - include: __types_def
             - match: '{{re_name_regular}}'
               scope: storage.type.other.v
             - include: __irregular
@@ -112,7 +112,7 @@ contexts:
       scope: keyword.declaration.struct.v
       push:
         - meta_scope: meta.struct
-        - include: __infer_type
+        - include: __types_def
         - include: Block
         - include: EOL
 
@@ -215,8 +215,9 @@ contexts:
       scope: punctuation.string.double.begin.v
       push:
       - meta_scope: string.quoted.double.v
+      - include: variable
       - include: escaped_char
-      - match: \"
+      - match: \"|$ ## quick fix
         scope: punctuation.string.double.end.v
         pop: true
 
@@ -225,35 +226,45 @@ contexts:
       scope: punctuation.string.single.begin.v
       push:
       - meta_scope: string.quoted.single.v
+      - include: variable
       - include: escaped_char
-      - match: \'
+      - match: \'|$ ## quick fix
         scope: punctuation.string.single.end.v
         pop: true
 
   literal_char:
-    - match: \`
+    - match: '`'
       scope: punctuation.string.literal.begin.v
       push:
-      - match: \b\w\b
-        scope: string.literal.v
-      - match: \b\S+\b
-        scope: invalid.illegal.v
-      - match: \`
+      - meta_scope: constant.character.v
+      - match: '`'
         scope: punctuation.string.literal.end.v
         pop: true
+
+  variable:
+    - match: \$
+      scope: string.interpolated.v
+      push:
+        - meta_scope: string.interpolated.v
+        - include: __function
+          pop: true
+        - include: __object
+          pop: true
+        - match: '{{re_name_regular}}'
+          scope: variable.other.v
+          pop: true
+        - match: \{
+          scope: punctuation.block.begin.v
+          push:
+            - meta_scope: meta.block
+            - match: \}
+              pop: true
+        - match: \W+|$ ## quick fix
+          pop: true
 
   escaped_char:
     - match: '{{re__escaped}}'
       scope: constant.character.escape.v
-
-
-  Operator:
-    - match: '{{re_operator}}'
-      captures:
-        1: keyword.operator.access.v
-        2: keyword.operator.assignment.v
-        3: keyword.operator.comparation.v
-        4: keyword.operator.v
 
 
   Value:
@@ -270,39 +281,53 @@ contexts:
       scope: keyword.control.flow.v
     - match: \b(pub|mut)\b
       scope: storage.modifier.v
-    - include: Operator
+    - include: __operator
     - match: '{{re__number}}'
       scope: constant.numeric.v
-    - include: __infer_type
+    - include: __types_def
     - match: \b([A-Z]+)\b
       scope: constant.other.v
     - include: __function
-    - match: '{{re_name_package}}'
-      captures:
-        1: variable.other.object.v
-        2: variable.other.object.property.v
+    - include: __object
 
 
-  # INFER
-
-  __irregular:
-    - match: '{{re_name_irregular}}'
-      scope: invalid.illegal.v
+  # ENTE
 
   __function:
     - match: '{{re_name_regular}}\s*(\()'
       captures:
         1: entity.name.function.v
         2: punctuation.function.params.begin.v
-      push: __infer_params__inside
+      push: __infer_params__
     - match: '{{re_name_package}}\s*(\()'
       captures:
-        1: variable.other.object.v
+        1: entity.name.object.v
         2: entity.name.function.v
         3: punctuation.function.params.begin.v
-      push: __infer_params__inside
+      push: __infer_params__
 
-  __infer_type:
+  __irregular:
+    - match: '{{re_name_irregular}}'
+      scope: invalid.illegal.v
+
+  __object:
+    - match: '{{re_name_package}}'
+      captures:
+        1: entity.name.object.v
+        2: entity.name.object.property.v
+
+  __operator:
+    - match: '{{re_operator}}'
+      captures:
+        1: keyword.operator.access.v
+        2: keyword.operator.assignment.v
+        3: keyword.operator.comparation.v
+        4: keyword.operator.v
+
+
+  # INFER
+
+  __types_def:
     - match: '{{re_types}}'
       captures:
         1: keyword.language.v
@@ -311,19 +336,28 @@ contexts:
         4: storage.type.map.v
         5: storage.type.other.v
 
+  __types_user:
+    - match: '{{re_types}}'
+      captures:
+        1: keyword.language.v
+        2: invalid.illegal.v
+        3: invalid.illegal.v
+        4: invalid.illegal.v
+        5: invalid.illegal.v
+
   __infer_params:
     - match: \(
       scope: punctuation.function.params.begin.v
-      push: __infer_params__inside
+      push: __infer_params__
 
-  __infer_params__inside:
-      - include: Value_min
-      - match: '{{re_name_regular}}'
-        scope: variable.parameter.v
-      - include: __irregular
-      - match: \)
-        scope: punctuation.function.params.end.v
-        pop: true
+  __infer_params__:
+    - include: Value_min
+    - match: '{{re_name_regular}}'
+      scope: variable.parameter.v
+    - include: __irregular
+    - match: \)
+      scope: punctuation.function.params.end.v
+      pop: true
 
   EOL:
     - match: $
