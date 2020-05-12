@@ -9,4 +9,34 @@ file_extensions:
 first_line_match: ^(\bModule\b|#!\S*/v)
 foldingStartMarker: '^.*[{\[\(]$'
 foldingStopMarker: '^[)]}]$'
-variables:
+
+contexts:
+  main:
+    - include: Comments
+
+
+  # GRAMMAR
+
+  Comments:
+    - include: comment_block
+    - include: comment_line
+
+  comment_block:
+    - match: /\*
+      scope: punctuation.comment.begin.v
+      push:
+        - meta_scope: comment.block.v
+        - include: comment_block
+        - include: comment_line
+        - match: \*/
+          scope: punctuation.comment.end.v
+          pop: true
+
+  comment_line:
+    - match: //
+      scope: punctuation.comment.begin.v
+      push:
+        - meta_scope: comment.line.double-slash.v
+        - include: comment_block
+        - match: $
+          pop: true
