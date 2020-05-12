@@ -1,0 +1,24 @@
+{
+  "selector": ["source.v"],
+  "file_patterns": ["*.v"],
+  "working_dir": "$file_path",
+  "shell_cmd": "v $file_name",
+  "variants": [
+    {
+      "name": "Run",
+      "shell_cmd": "v run $file_name"
+    }, {
+      "name": "Test",
+      "shell_cmd": "v test $file_name"
+    }, {
+      "name": "Profile",
+      "shell_cmd": "v -profile ${file_base_name}.txt $file_name"
+    }, {
+      "name": "Time",
+      "shell_cmd": "time $file_base_name &>/dev/null"
+    }, {
+      "name": "Exec",
+      "shell_cmd": "$file_base_name"
+    }
+  ]
+}
