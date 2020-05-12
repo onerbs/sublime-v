@@ -27,7 +27,7 @@ variables:
   re_type_primitive: \b(bool|byteptr|rune|string|voidptr)\b
   re_type_class: ([A-Z][A-Za-z\d_]*)
 
-  re_types: '(?:{{re_type_numeric}}|{{re_type_primitive}}|\b(map)\b|{{re_type_class}})'
+  re_types: '(?:\b(this|self)\b|{{re_type_numeric}}|{{re_type_primitive}}|\b(map)\b|{{re_type_class}})'
 
 contexts:
   main:
@@ -72,7 +72,9 @@ contexts:
           push:
             - include: __infer_params
             - include: __infer_type
-            - include: __infer_type_plus
+            - match: '{{re_name_regular}}'
+              scope: storage.type.other.v
+            - include: __irregular
             # Q: - include: Block?
             - match: \{
               scope: punctuation.function.body.begin.v
@@ -164,8 +166,7 @@ contexts:
         # val
         - match: '{{re_name_regular}}'
           scope: variable.other.v
-        - match: '{{re_name_irregular}}'
-          scope: invalid.illegal.v
+        - include: __irregular
         # - include: Type.any
         #   push: Struct.new
         - match: $
@@ -192,8 +193,7 @@ contexts:
       push:
         - meta_scope: meta.infer.variable
         - include: __infer_type_with_op
-    - match: '{{re_name_irregular}}'
-      scope: invalid.illegal.v
+    - include: __irregular
       push:
         - meta_scope: meta.infer.variable.irregular
         - include: __infer_type_with_op
@@ -268,6 +268,10 @@ contexts:
 
   # INFER
 
+  __irregular:
+    - match: '{{re_name_irregular}}'
+      scope: invalid.illegal.v
+
   __infer_type_with_op:
     - include: Comments
     - include: Strings
@@ -282,25 +286,23 @@ contexts:
       pop: true
 
   __infer_type:
-    - match: '{{re_types}}'
+    - match: '(?:\s*,\s*)?{{re_types}}'
       captures:
-        1: storage.type.numeric.v
-        2: storage.type.primitive.v
-        3: storage.type.map.v
-        4: entity.name.other.v
-
-  __infer_type_plus:
-    - match: '{{re_name_regular}}'
-      scope: storage.type.other.v
-    - match: '{{re_name_irregular}}'
-      scope: invalid.illegal.v
+        1: keyword.language.v
+        2: storage.type.numeric.v
+        3: storage.type.primitive.v
+        4: storage.type.map.v
+        5: entity.name.other.v
 
   __infer_params:
     - match: \(
       scope: punctuation.function.params.begin.v
       push:
         - meta_scope: meta.function.params
-        # INFER
+        - include: __infer_type
+        - match: '{{re_name_regular}}'
+          scope: variable.parameter.v
+        - include: __irregular
         - match: \)
           scope: punctuation.function.params.end.v
           pop: true
