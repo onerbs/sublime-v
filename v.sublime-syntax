@@ -126,29 +126,10 @@ contexts:
     - match: \b(return)\b
       scope: keyword.control.return.v
       push:
+        - meta_scope: meta.return
         - include: Constant
         - include: String
-        - meta_scope: meta.return
-        # some.fun(
-        - match: '(?:{{re_name_regular}}\.)?{{re_name_regular}}\s*\('
-          captures:
-            1: entity.other.object.v
-            2: entity.name.function.v
-          push:
-            - include: Constant
-            - match: \)
-              pop: true
-        # some.val
-        - match: '(?:{{re_name_regular}}\.)+{{re_name_regular}}'
-          captures:
-            1: entity.other.object.v
-            2: entity.other.object.property.v
-        # val
-        - match: '{{re_name_regular}}'
-          scope: variable.other.v
-        - include: __irregular
-        # - include: Type.any
-        #   push: Struct.new
+        - include: Value
         - match: $
           pop: true
 
@@ -259,6 +240,36 @@ contexts:
   escaped_char:
     - match: '{{re__escaped}}'
       scope: constant.character.escape.v
+
+
+  Value:
+    # some.fun(
+    - match: '(?:{{re_name_regular}}\.)?{{re_name_regular}}\s*\('
+    # mirror: __infer_params
+      captures:
+        1: entity.other.object.v
+        2: entity.name.function.v
+      scope: punctuation.function.params.begin.v
+      push:
+        - meta_scope: meta.function.params
+        - include: __infer_type
+        - match: '{{re_name_regular}}'
+          scope: variable.parameter.v
+        - include: __irregular
+        - match: \)
+          scope: punctuation.function.params.end.v
+          pop: true
+    # some.val
+    - match: '(?:{{re_name_regular}}\.)+{{re_name_regular}}'
+      captures:
+        1: entity.other.object.v
+        2: entity.other.object.property.v
+    # val
+    - match: '{{re_name_regular}}'
+      scope: variable.other.v
+    - include: __irregular
+    # - include: Type.any
+    #   push: Struct.new
 
 
   # INFER
