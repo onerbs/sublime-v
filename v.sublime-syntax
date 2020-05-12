@@ -27,7 +27,7 @@ variables:
   re_type_primitive: \b(bool|byteptr|rune|string|voidptr)\b
   re_type_class: ([A-Z][A-Za-z\d_]*)
 
-  re_types: '(?:\b(this|self)\b|{{re_type_numeric}}|{{re_type_primitive}}|\b(map)\b|{{re_type_class}})'
+  re_types: '(?:\b(pub|mut)\b|{{re_type_numeric}}|{{re_type_primitive}}|\b(this|self)\b|\b(map)\b|{{re_type_class}})'
 
 contexts:
   main:
@@ -134,7 +134,6 @@ contexts:
           push:
             - meta_scope: meta.struct.body
             - include: Comments
-            - match: \b(pub|mut)\b
             - include: Association
             - match: \}
               scope: punctuation.struct.body.end.v
@@ -288,11 +287,12 @@ contexts:
   __infer_type:
     - match: '(?:\s*,\s*)?{{re_types}}'
       captures:
-        1: keyword.language.v
+        1: storage.modifier.v
         2: storage.type.numeric.v
         3: storage.type.primitive.v
-        4: storage.type.map.v
-        5: entity.name.other.v
+        4: keyword.language.v
+        5: storage.type.map.v
+        6: entity.name.other.v
 
   __infer_params:
     - match: \(
