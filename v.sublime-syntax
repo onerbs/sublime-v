@@ -137,8 +137,8 @@ contexts:
   # GRAMMAR
 
   Association:
-    - include: Comments
-    - include: Strings
+    - match: \b(pub|mut)\b
+      scope: storage.modifier.v
     - match: \b([A-Z]+)\b
       scope: constant.other.v
       push:
