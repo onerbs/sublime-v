@@ -27,6 +27,7 @@ contexts:
     - include: Const
     - include: Import
     - include: Module
+    - include: Struct
 
     - include: Comments
     - include: Strings
@@ -43,7 +44,7 @@ contexts:
           scope: punctuation.const.body.begin.v
           push:
             - meta_scope: meta.const.body
-            # todo: assignment.
+            - include: Association
             - match: \)
               scope: punctuation.const.body.end.v
               pop: true
@@ -78,6 +79,25 @@ contexts:
         - meta_scope: meta.module
         - match: '{{re_name_package}}'
           scope: entity.name.namespace
+        - match: $
+          pop: true
+
+  Struct:
+    - match: \b(struct)\b
+      scope: keyword.declaration.struct.v
+      push:
+        - meta_scope: meta.struct
+        - include: infer_type
+        - match: \{
+          scope: punctuation.struct.body.begin.v
+          push:
+            - meta_scope: meta.struct.body
+            - include: Comments
+            - match: \b(pub|mut)\b
+            - include: Association
+            - match: \}
+              scope: punctuation.struct.body.end.v
+              pop: true
         - match: $
           pop: true
 
