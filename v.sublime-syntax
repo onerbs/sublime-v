@@ -13,10 +13,67 @@ foldingStopMarker: '^[)]}]$'
 variables:
   re__escaped: '\\([\\tvnrbfae''"]|x\h{2}|\d{,3})'
 
+  re_name_regular: \b([a-z][a-z\d_]*)\b
+  re_name_package: '(?:{{re_name_regular}}\.)*{{re_name_regular}}'
+
 contexts:
   main:
+    - include: Const
+    - include: Import
+    - include: Module
+
     - include: Comments
     - include: Strings
+
+
+  # KEYWORDS
+
+  Const:
+    - match: \b(const)\b
+      scope: keyword.declaration.constant.v
+      push:
+        - meta_scope: meta.const
+        - match: \(
+          scope: punctuation.const.body.begin.v
+          push:
+            - meta_scope: meta.const.body
+            # todo: assignment.
+            - match: \)
+              scope: punctuation.const.body.end.v
+              pop: true
+        - match: $
+          pop: true
+
+  Import:
+    - match: \b(import)\b
+      scope: keyword.declaration.import.v
+      push:
+        - meta_scope: meta.import
+        - match: '{{re_name_package}}'
+          scope: entity.name.namespace.v
+          push:
+            - match: \b(as)\b
+              scope: keyword.other.alias.v
+              push:
+                - meta_scope: meta.import.alias
+                - match: '{{re_name_regular}}'
+                  scope: entity.name.namespace.alias.v
+                - match: $
+                  pop: true
+            - match: $
+              pop: true
+        - match: $
+          pop: true
+
+  Module:
+    - match: \b(module)\b
+      scope: keyword.declaration.namespace.v
+      push:
+        - meta_scope: meta.module
+        - match: '{{re_name_package}}'
+          scope: entity.name.namespace
+        - match: $
+          pop: true
 
 
   # GRAMMAR
