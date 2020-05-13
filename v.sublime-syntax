@@ -42,36 +42,28 @@ contexts:
     - include: Block
     - include: Flow
 
-
   # KEYWORDS
 
   Const:
     - match: \b(const)\b
       scope: keyword.declaration.constant.v
       push:
-        - meta_scope: meta.const
-        - match: \(
-          scope: punctuation.const.body.begin.v
-          push:
-            - meta_scope: meta.const.body
-            - include: Value
-            - match: \)
-              scope: punctuation.const.body.end.v
-              pop: true
+        - meta_scope: meta.const.v
+        - include: Params
         - include: EOL
 
   Function:
-    - match: (\bpub\b\s+)?(\bfn\b)
-      captures:
-        1: storage.modifier.v
-        2: keyword.declaration.function.v
+    - match: \b(pub)\b
+      scope: storage.modifier.v
+    - match: \b(fn)\b
+      scope: keyword.declaration.function.v
       push:
-        - meta_scope: meta.function
-        - include: __infer_params
+        - meta_scope: meta.function.v
+        - include: Params
         - match: '{{re_name_regular}}'
           scope: entity.name.function.v
           push:
-            - include: __infer_params
+            - include: Params
             - include: __types_def
             - match: '{{re_name_regular}}'
               scope: storage.type.other.v
@@ -80,18 +72,31 @@ contexts:
             - include: EOL
         - include: EOL
 
+  FunctionCall:
+    - match: '{{re_name_regular}}\s*(\()'
+      captures:
+        1: entity.name.function.v
+        2: punctuation.function.params.begin.v
+      push: __params__
+    - match: '{{re_name_package}}\s*(\()'
+      captures:
+        1: entity.name.object.v
+        2: entity.name.function.v
+        3: punctuation.function.params.begin.v
+      push: __params__
+
   Import:
     - match: \b(import)\b
       scope: keyword.declaration.import.v
       push:
-        - meta_scope: meta.import
+        - meta_scope: meta.import.v
         - match: '{{re_name_package}}'
           scope: entity.name.namespace.v
           push:
             - match: \b(as)\b
               scope: keyword.other.alias.v
               push:
-                - meta_scope: meta.import.alias
+                - meta_scope: meta.import.alias.v
                 - match: '{{re_name_regular}}'
                   scope: entity.name.namespace.alias.v
                 - include: EOL
@@ -102,16 +107,16 @@ contexts:
     - match: \b(module)\b
       scope: keyword.declaration.namespace.v
       push:
-        - meta_scope: meta.module
+        - meta_scope: meta.module.v
         - match: '{{re_name_package}}'
-          scope: entity.name.namespace
+          scope: entity.name.namespace.v
         - include: EOL
 
   Struct:
     - match: \b(struct)\b
       scope: keyword.declaration.struct.v
       push:
-        - meta_scope: meta.struct
+        - meta_scope: meta.struct.v
         - include: __types_def
         - include: Block
         - include: EOL
@@ -120,7 +125,7 @@ contexts:
     - match: \b(return)\b
       scope: keyword.control.return.v
       push:
-        - meta_scope: meta.return
+        - meta_scope: meta.return.v
         - include: Constant
         - include: String
         - include: Flow.if
@@ -134,50 +139,58 @@ contexts:
     - include: Flow.if
     - include: Flow.else
     - include: Flow.for
-  #   - include: Flow.match
+    - include: Flow.match
 
   Flow.if:
     - match: \b(if)\b
       scope: keyword.control.if.v
       push:
-        - meta_scope: meta.flow.if
-        - include: Flow.else
         - include: Value
         - include: Block
-        - include: EOL
+        - match: \s+|$
+          pop: true
 
   Flow.else:
     - match: \b(else)\b
       scope: keyword.control.else.v
       push:
-        - meta_scope: meta.flow.else
         - include: Flow.if
         - include: Block
-        - include: EOL
+        - match: \s+|$
+          pop: true
 
   Flow.for:
     - match: \b(for)\b
       scope: keyword.control.for.v
       push:
-        - meta_scope: meta.flow.for
         - include: Value
         - include: Block
-        - include: EOL
+        - match: \s+|$
+          pop: true
+
+  Flow.match:
+    - match: \b(match)\b
+      scope: keyword.control.match.v
+      push:
+        - include: Value
+        - include: Block
+        - match: \s+|$
+          pop: true
 
 
   # GRAMMAR
 
   Block:
     - match: \{
-      scope: punctuation.block.begin.v
+      scope: punctuation.definition.block.begin.v
       push:
-        - meta_scope: meta.block
+        - meta_scope: meta.block.v
         - include: Flow
         - include: Return
         - include: Value
         - include: Block
         - match: \}
-          scope: punctuation.block.end
+          scope: punctuation.definition.block.end.v
           pop: true
 
 
@@ -203,6 +216,21 @@ contexts:
         - meta_scope: comment.line.double-slash.v
         - include: comment_block
         - include: EOL
+
+
+  Params:
+    - match: \(
+      scope: punctuation.definition.params.begin.v
+      push: __params__
+
+  __params__:
+    - include: Value_min
+    - match: '{{re_name_regular}}'
+      scope: variable.parameter.v
+    - include: __irregular
+    - match: \)
+      scope: punctuation.definition.params.end.v
+      pop: true
 
 
   Strings:
@@ -246,7 +274,7 @@ contexts:
       scope: string.interpolated.v
       push:
         - meta_scope: string.interpolated.v
-        - include: __function
+        - include: FunctionCall
           pop: true
         - include: __object
           pop: true
@@ -256,7 +284,7 @@ contexts:
         - match: \{
           scope: punctuation.block.begin.v
           push:
-            - meta_scope: meta.block
+            - meta_scope: meta.block.v
             - match: \}
               pop: true
         - match: \W+|$ ## quick fix
@@ -274,7 +302,6 @@ contexts:
     - include: __irregular
 
   Value_min:
-    - meta_scope: left_side
     - include: Comments
     - include: Strings
     - match: \b(break|continue|defer)\b
@@ -287,24 +314,11 @@ contexts:
     - include: __types_def
     - match: \b([A-Z]+)\b
       scope: constant.other.v
-    - include: __function
+    - include: FunctionCall
     - include: __object
 
 
-  # ENTE
-
-  __function:
-    - match: '{{re_name_regular}}\s*(\()'
-      captures:
-        1: entity.name.function.v
-        2: punctuation.function.params.begin.v
-      push: __infer_params__
-    - match: '{{re_name_package}}\s*(\()'
-      captures:
-        1: entity.name.object.v
-        2: entity.name.function.v
-        3: punctuation.function.params.begin.v
-      push: __infer_params__
+  # INFER
 
   __irregular:
     - match: '{{re_name_irregular}}'
@@ -324,9 +338,6 @@ contexts:
         3: keyword.operator.comparation.v
         4: keyword.operator.v
 
-
-  # INFER
-
   __types_def:
     - match: '{{re_types}}'
       captures:
@@ -344,20 +355,6 @@ contexts:
         3: invalid.illegal.v
         4: invalid.illegal.v
         5: invalid.illegal.v
-
-  __infer_params:
-    - match: \(
-      scope: punctuation.function.params.begin.v
-      push: __infer_params__
-
-  __infer_params__:
-    - include: Value_min
-    - match: '{{re_name_regular}}'
-      scope: variable.parameter.v
-    - include: __irregular
-    - match: \)
-      scope: punctuation.function.params.end.v
-      pop: true
 
   EOL:
     - match: $
