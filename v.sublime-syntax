@@ -4,9 +4,9 @@ name: V
 scope: source.v
 file_extensions:
   - v
-  - vv
   - vsh
-first_line_match: ^(\bModule\b|#!\S*/v)
+  - v.mod
+first_line_match: ^#!\S*/v
 foldingStartMarker: '^.*[{\[\(]$'
 foldingStopMarker: '^[)]}]$'
 
@@ -41,6 +41,9 @@ contexts:
     - include: Strings
     - include: Block
     - include: Flow
+
+    - match: \b(Module)\b
+      scope: keyword.language.v
 
   # KEYWORDS
 
