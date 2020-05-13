@@ -7,16 +7,24 @@
     {
       "name": "Run",
       "shell_cmd": "v run $file_name"
-    }, {
+    },
+    {
       "name": "Test",
       "shell_cmd": "v test $file_name"
-    }, {
+    },
+    {
+      "name": "Format",
+      "shell_cmd": "v fmt $file_name > _$file_name && rm $file_name && mv _$file_name $file_name"
+    },
+    {
       "name": "Profile",
       "shell_cmd": "v -profile ${file_base_name}.txt $file_name"
-    }, {
+    },
+    {
       "name": "Time",
       "shell_cmd": "time $file_base_name &>/dev/null"
-    }, {
+    },
+    {
       "name": "Exec",
       "shell_cmd": "$file_base_name"
     }
