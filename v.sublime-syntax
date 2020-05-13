@@ -27,7 +27,7 @@ variables:
   re_type_primitive: (bool|byteptr|rune|string|voidptr)
   re_type_class: ([A-Z][A-Za-z\d_]*)
 
-  re_types: '\b(?:(this|self)|{{re_type_numeric}}|{{re_type_primitive}}|map|{{re_type_class}})\b'
+  re_types: '\b(?:(this|self)|{{re_type_numeric}}|{{re_type_primitive}}|(map)|{{re_type_class}})\b'
 
 contexts:
   main:
