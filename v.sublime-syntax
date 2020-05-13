@@ -20,7 +20,7 @@ variables:
   re__number: \b(\d+(?:\.\d+)*|0x\h{2})\b
 
   re_name_package: '(?:{{re_name_regular}}\.)+{{re_name_regular}}'
-  re_name_regular: \b([a-z][a-z\d_]*)\b
+  re_name_regular: \b([a-z_][a-z\d_]*)\b
   re_name_irregular: \b([A-Za-z][A-Za-z\d_]+)\b
 
   re_type_numeric: (byte|u(?:16|32|64|128)|i(?:nt|16|64|128|8)|f(?:32|64))
@@ -123,7 +123,7 @@ contexts:
 
   Return:
     - match: \b(return)\b
-      scope: keyword.control.return.v
+      scope: keyword.control.flow.return.v
       push:
         - meta_scope: meta.return.v
         - include: Constant
@@ -143,7 +143,7 @@ contexts:
 
   Flow.if:
     - match: \b(if)\b
-      scope: keyword.control.if.v
+      scope: keyword.control.conditional.if.v
       push:
         - include: Value
         - include: Block
@@ -152,7 +152,7 @@ contexts:
 
   Flow.else:
     - match: \b(else)\b
-      scope: keyword.control.else.v
+      scope: keyword.control.conditional.else.v
       push:
         - include: Flow.if
         - include: Block
@@ -161,7 +161,7 @@ contexts:
 
   Flow.for:
     - match: \b(for)\b
-      scope: keyword.control.for.v
+      scope: keyword.control.conditional.for.v
       push:
         - include: Value
         - include: Block
@@ -170,7 +170,7 @@ contexts:
 
   Flow.match:
     - match: \b(match)\b
-      scope: keyword.control.match.v
+      scope: keyword.control.conditional.match.v
       push:
         - include: Value
         - include: Block
@@ -271,9 +271,8 @@ contexts:
 
   variable:
     - match: \$
-      scope: string.interpolated.v
+      scope: punctuation.definition.value.v
       push:
-        - meta_scope: string.interpolated.v
         - include: FunctionCall
           pop: true
         - include: __object
@@ -281,12 +280,8 @@ contexts:
         - match: '{{re_name_regular}}'
           scope: variable.other.v
           pop: true
-        - match: \{
-          scope: punctuation.block.begin.v
-          push:
-            - meta_scope: meta.block.v
-            - match: \}
-              pop: true
+        - include: __types_user
+        - include: Block
         - match: \W+|$ ## quick fix
           pop: true
 
@@ -354,7 +349,7 @@ contexts:
         2: invalid.illegal.v
         3: invalid.illegal.v
         4: invalid.illegal.v
-        5: invalid.illegal.v
+        5: storage.type.other.v
 
   EOL:
     - match: $
