@@ -7,15 +7,10 @@ file_extensions:
   - vsh
   - v.mod
 first_line_match: ^#!\S*/v
-foldingStartMarker: '^.*[{\[\(]$'
-foldingStopMarker: '^[)]}]$'
+foldingStartMarker: '[{\[\(]$'
+foldingStopMarker: '[)]}]$'
 
 variables:
-  re_op_access: \b(in)\b
-  re_op_assign: (\:=|\:|=)
-  re_op_compare: (<=|>=|<|>)
-  re_operator: '(?:{{re_op_access}}|{{re_op_assign}}|{{re_op_compare}}|([\|<>=\*/&%\+\-\.]+))'
-
   re__escaped: \\([\\tvnrbfae''"]|x\h{2}|\d{,3})
   re__number: \b(\d+(?:\.\d+)*|0x\h{2})\b
 
@@ -39,6 +34,7 @@ contexts:
 
     - include: Comments
     - include: Strings
+    - include: Value
     - include: Block
     - include: Flow
 
@@ -57,7 +53,7 @@ contexts:
 
   Function:
     - match: \b(pub)\b
-      scope: storage.modifier.v
+      scope: storage.modifier.public.v
     - match: \b(fn)\b
       scope: keyword.declaration.function.v
       push:
@@ -66,11 +62,12 @@ contexts:
         - match: '{{re_name_regular}}'
           scope: entity.name.function.v
           push:
+            - match: \?
+              scope: storage.modifier.optional.v
             - include: Params
-            - include: __types_def
+            - include: Type
             - match: '{{re_name_regular}}'
               scope: storage.type.other.v
-            - include: __irregular
             - include: Block
             - include: EOL
         - include: EOL
@@ -120,7 +117,7 @@ contexts:
       scope: keyword.declaration.struct.v
       push:
         - meta_scope: meta.struct.v
-        - include: __types_def
+        - include: Type
         - include: Block
         - include: EOL
 
@@ -213,12 +210,56 @@ contexts:
           pop: true
 
   comment_line:
-    - match: //
+    - match: //|#
       scope: punctuation.comment.begin.v
       push:
         - meta_scope: comment.line.double-slash.v
         - include: comment_block
         - include: EOL
+
+
+  IrregularName:
+    - match: '{{re_name_irregular}}'
+      scope: invalid.illegal.v
+
+
+  Object:
+    - match: '{{re_name_package}}'
+      captures:
+        1: entity.name.object.v
+        2: entity.name.object.property.v
+
+
+  Operator:
+    - match: \b(in)\b
+      scope: keyword.operator.access.v
+    - match: \:=|\:|=
+      scope: keyword.operator.assignment.v
+    - match: <=|>=|<|>
+      scope: keyword.operator.comparison.v
+    - match: \.\.
+      scope: keyword.operator.range.v
+    - match: ([\|<>=\*/&%\+\-\.]+)
+      scope: keyword.operator.v
+
+
+  Type:
+    - include: TypeModifier
+    - match: '{{re_types}}'
+      captures:
+        1: keyword.language.v
+        2: storage.type.numeric.v
+        3: storage.type.primitive.v
+        4: storage.type.map.v
+        5: storage.type.other.v
+
+  TypeModifier:
+    - match: (\*)+
+      scope: storage.modifier.pointer.v
+    - match: (\[])+
+      scope: storage.modifier.array.v
+    - match: (&)?
+      scope: storage.modifier.mutable.v
 
 
   Params:
@@ -230,7 +271,8 @@ contexts:
     - include: Value_min
     - match: '{{re_name_regular}}'
       scope: variable.parameter.v
-    - include: __irregular
+    - include: IrregularName
+    - include: Params
     - match: \)
       scope: punctuation.definition.params.end.v
       pop: true
@@ -278,12 +320,12 @@ contexts:
       push:
         - include: FunctionCall
           pop: true
-        - include: __object
+        - include: Object
           pop: true
         - match: '{{re_name_regular}}'
           scope: variable.other.v
           pop: true
-        - include: __types_user
+        - include: Type
         - include: Block
         - match: \W+|$ ## quick fix
           pop: true
@@ -294,65 +336,28 @@ contexts:
 
 
   Value:
+    - match: \b(break|continue|defer)\b
+      scope: keyword.control.flow.v
+    - match: \b(in)\b
+      scope: keyword.control.flow.v
     - include: Value_min
     - match: '{{re_name_regular}}'
       scope: variable.other.v
-    - include: __irregular
+    - include: IrregularName
+    - include: Operator
 
   Value_min:
     - include: Comments
     - include: Strings
-    - match: \b(break|continue|defer)\b
-      scope: keyword.control.flow.v
-    - match: \b(pub|mut)\b
-      scope: storage.modifier.v
-    - include: __operator
+    - match: \b(mut)\b
+      scope: storage.modifier.mutable.v
     - match: '{{re__number}}'
       scope: constant.numeric.v
-    - include: __types_def
+    - include: Type
     - match: \b([A-Z]+)\b
       scope: constant.other.v
     - include: FunctionCall
-    - include: __object
-
-
-  # INFER
-
-  __irregular:
-    - match: '{{re_name_irregular}}'
-      scope: invalid.illegal.v
-
-  __object:
-    - match: '{{re_name_package}}'
-      captures:
-        1: entity.name.object.v
-        2: entity.name.object.property.v
-
-  __operator:
-    - match: '{{re_operator}}'
-      captures:
-        1: keyword.operator.access.v
-        2: keyword.operator.assignment.v
-        3: keyword.operator.comparation.v
-        4: keyword.operator.v
-
-  __types_def:
-    - match: '{{re_types}}'
-      captures:
-        1: keyword.language.v
-        2: storage.type.numeric.v
-        3: storage.type.primitive.v
-        4: storage.type.map.v
-        5: storage.type.other.v
-
-  __types_user:
-    - match: '{{re_types}}'
-      captures:
-        1: keyword.language.v
-        2: invalid.illegal.v
-        3: invalid.illegal.v
-        4: invalid.illegal.v
-        5: storage.type.other.v
+    - include: Object
 
   EOL:
     - match: $
