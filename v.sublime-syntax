@@ -41,7 +41,39 @@ contexts:
     - include: Block
     - include: Flow
 
-  # KEYWORDS
+  Block:
+    - match: \{
+      scope: punctuation.definition.block.begin.v
+      push:
+        - meta_scope: meta.block.v
+        - include: Flow
+        - include: Return
+        - include: Value
+        - include: Block
+        - match: \}
+          scope: punctuation.definition.block.end.v
+          pop: true
+
+  Comments:
+    - include: comment_block
+    - include: comment_line
+  comment_block:
+    - match: /\*
+      scope: punctuation.comment.begin.v
+      push:
+        - meta_scope: comment.block.v
+        - include: comment_block
+        - include: comment_line
+        - match: \*/
+          scope: punctuation.comment.end.v
+          pop: true
+  comment_line:
+    - match: //|#
+      scope: punctuation.comment.begin.v
+      push:
+        - meta_scope: comment.line.double-slash.v
+        - include: comment_block
+        - include: EOL
 
   Const:
     - match: \b(const)\b
@@ -71,14 +103,13 @@ contexts:
             - include: Block
             - include: EOL
         - include: EOL
-
   FunctionCall:
     - match: '{{re_name_regular}}\s*(\()'
       captures:
         1: keyword.language.v
         2: entity.name.function.v
         3: punctuation.function.params.begin.v
-      push: __params__
+      push: param_args
     - match: '{{re_name_package}}\s*(\()'
       captures:
         1: keyword.language.v
@@ -86,7 +117,45 @@ contexts:
         3: keyword.language.v
         4: entity.name.function.v
         5: punctuation.function.params.begin.v
-      push: __params__
+      push: param_args
+
+  Flow:
+    - include: FlowIf
+    - include: FlowElse
+    - include: FlowFor
+    - include: FlowMatch
+  FlowIf:
+    - match: \b(if)\b
+      scope: keyword.control.conditional.if.v
+      push:
+        - include: Value
+        - include: Block
+        - match: \s+|$
+          pop: true
+  FlowElse:
+    - match: \b(else)\b
+      scope: keyword.control.conditional.else.v
+      push:
+        - include: FlowIf
+        - include: Block
+        - match: \s+|$
+          pop: true
+  FlowFor:
+    - match: \b(for)\b
+      scope: keyword.control.conditional.for.v
+      push:
+        - include: Value
+        - include: Block
+        - match: \s+|$
+          pop: true
+  FlowMatch:
+    - match: \b(match)\b
+      scope: keyword.control.conditional.match.v
+      push:
+        - include: Value
+        - include: Block
+        - match: \s+|$
+          pop: true
 
   Import:
     - match: \b(import)\b
@@ -98,6 +167,10 @@ contexts:
         - match: '{{re_name_package}}'
           scope: entity.name.namespace.v
         - include: EOL
+
+  IrregularName:
+    - match: '{{re_name_irregular}}'
+      scope: invalid.illegal.v
 
   Module:
     - match: \b(module)\b
@@ -124,122 +197,9 @@ contexts:
         - meta_scope: meta.return.v
         - include: Constant
         - include: String
-        - include: Flow.if
+        - include: FlowIf
         - include: Value
         - include: EOL
-
-
-  # FLOW
-
-  Flow:
-    - include: Flow.if
-    - include: Flow.else
-    - include: Flow.for
-    - include: Flow.match
-
-  Flow.if:
-    - match: \b(if)\b
-      scope: keyword.control.conditional.if.v
-      push:
-        - include: Value
-        - include: Block
-        - match: \s+|$
-          pop: true
-
-  Flow.else:
-    - match: \b(else)\b
-      scope: keyword.control.conditional.else.v
-      push:
-        - include: Flow.if
-        - include: Block
-        - match: \s+|$
-          pop: true
-
-  Flow.for:
-    - match: \b(for)\b
-      scope: keyword.control.conditional.for.v
-      push:
-        - include: Value
-        - include: Block
-        - match: \s+|$
-          pop: true
-
-  Flow.match:
-    - match: \b(match)\b
-      scope: keyword.control.conditional.match.v
-      push:
-        - include: Value
-        - include: Block
-        - match: \s+|$
-          pop: true
-
-
-  # GRAMMAR
-
-  Block:
-    - match: \{
-      scope: punctuation.definition.block.begin.v
-      push:
-        - meta_scope: meta.block.v
-        - include: Flow
-        - include: Return
-        - include: Value
-        - include: Block
-        - match: \}
-          scope: punctuation.definition.block.end.v
-          pop: true
-
-
-  Comments:
-    - include: comment_block
-    - include: comment_line
-
-  comment_block:
-    - match: /\*
-      scope: punctuation.comment.begin.v
-      push:
-        - meta_scope: comment.block.v
-        - include: comment_block
-        - include: comment_line
-        - match: \*/
-          scope: punctuation.comment.end.v
-          pop: true
-
-  comment_line:
-    - match: //|#
-      scope: punctuation.comment.begin.v
-      push:
-        - meta_scope: comment.line.double-slash.v
-        - include: comment_block
-        - include: EOL
-
-
-  IrregularName:
-    - match: '{{re_name_irregular}}'
-      scope: invalid.illegal.v
-
-
-  Object:
-    - match: '{{re_name_package}}'
-      captures:
-        1: keyword.language.v
-        2: entity.name.object.v
-        3: keyword.language.v
-        4: entity.name.object.property.v
-
-
-  Operator:
-    - match: \b(in)\b
-      scope: keyword.operator.access.v
-    - match: \:=|\:|=
-      scope: keyword.operator.assignment.v
-    - match: <=|>=|<|>|==|!=
-      scope: keyword.operator.comparison.v
-    - match: \.\.
-      scope: keyword.operator.range.v
-    - match: ([\|<>=\*/&%\+\-\.]+)
-      scope: keyword.operator.v
-
 
   Type:
     - include: TypeModifier
@@ -259,13 +219,31 @@ contexts:
     - match: (&)?
       scope: storage.modifier.mutable.v
 
+  Object:
+    - match: '{{re_name_package}}'
+      captures:
+        1: keyword.language.v
+        2: entity.name.object.v
+        3: keyword.language.v
+        4: entity.name.object.property.v
+
+  Operator:
+    - match: \b(in)\b
+      scope: keyword.operator.access.v
+    - match: \:=|\:|=
+      scope: keyword.operator.assignment.v
+    - match: <=|>=|<|>|==|!=
+      scope: keyword.operator.comparison.v
+    - match: \.\.
+      scope: keyword.operator.range.v
+    - match: ([\|<>=\*/&%\+\-\.]+)
+      scope: keyword.operator.v
 
   Params:
     - match: \(
       scope: punctuation.definition.params.begin.v
-      push: __params__
-
-  __params__:
+      push: param_args
+  param_args:
     - include: Value_min
     - match: '{{re_name_regular}}'
       scope: variable.parameter.v
@@ -275,12 +253,10 @@ contexts:
       scope: punctuation.definition.params.end.v
       pop: true
 
-
   Strings:
     - include: quoted_double
     - include: quoted_single
     - include: literal_char
-
   quoted_double:
     - match: \"
       scope: punctuation.string.double.begin.v
@@ -291,7 +267,6 @@ contexts:
       - match: \"
         scope: punctuation.string.double.end.v
         pop: true
-
   quoted_single:
     - match: \'
       scope: punctuation.string.single.begin.v
@@ -301,7 +276,6 @@ contexts:
       - match: \'
         scope: punctuation.string.single.end.v
         pop: true
-
   literal_char:
     - match: '`'
       scope: punctuation.string.literal.begin.v
@@ -310,11 +284,9 @@ contexts:
       - match: '`'
         scope: punctuation.string.literal.end.v
         pop: true
-
   escaped_char:
     - match: '{{re__escaped}}'
       scope: constant.character.escape.v
-
 
   Value:
     - match: \b(break|continue|defer|in)\b
@@ -324,7 +296,6 @@ contexts:
       scope: variable.other.v
     - include: IrregularName
     - include: Operator
-
   Value_min:
     - include: Comments
     - include: Strings

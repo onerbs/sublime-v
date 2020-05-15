@@ -13,8 +13,16 @@
       "shell_cmd": "v test $file_name"
     },
     {
+      "name": "Test Module",
+      "shell_cmd": "v test ."
+    },
+    {
       "name": "Format",
       "shell_cmd": "v fmt $file_name > _$file_name && rm $file_name && mv _$file_name $file_name"
+    },
+    {
+      "name": "Dist",
+      "shell_cmd": "v -prod $file_name"
     },
     {
       "name": "Profile",
