@@ -36,7 +36,7 @@ contexts:
     - include: Struct
 
     - include: Comment
-    - include: Strings
+    - include: String
     - include: Value
     - include: Block
     - include: Flow
@@ -54,24 +54,25 @@ contexts:
           pop: true
 
   Comment:
-    - include: BlockComment
-    - include: LineComment
-  BlockComment:
+    - include: CommentBlock
+    - include: CommentLine
+
+  CommentBlock:
     - match: /\*
       scope: punctuation.comment.begin.v
       push:
         - meta_scope: comment.block.v
-        - include: BlockComment
-        - include: LineComment
+        - include: CommentBlock
+        - include: CommentLine
         - match: \*/
           scope: punctuation.comment.end.v
           pop: true
-  LineComment:
+  CommentLine:
     - match: //|#
       scope: punctuation.comment.begin.v
       push:
         - meta_scope: comment.line.double-slash.v
-        - include: BlockComment
+        - include: CommentBlock
         - include: EOL
 
   Const:
@@ -102,13 +103,14 @@ contexts:
             - include: Block
             - include: EOL
         - include: EOL
+
   FunctionCall:
     - match: '{{re_name_regular}}\s*(\()'
       captures:
         1: keyword.language.v
         2: entity.name.function.v
         3: punctuation.function.params.begin.v
-      push: param_args
+      push: __params
     - match: '{{re_name_package}}\s*(\()'
       captures:
         1: keyword.language.v
@@ -116,13 +118,14 @@ contexts:
         3: keyword.language.v
         4: entity.name.function.v
         5: punctuation.function.params.begin.v
-      push: param_args
+      push: __params
 
   Flow:
     - include: FlowIf
     - include: FlowElse
     - include: FlowFor
     - include: FlowMatch
+
   FlowIf:
     - match: \b(if)\b
       scope: keyword.control.conditional.if.v
@@ -131,6 +134,7 @@ contexts:
         - include: Block
         - match: \s+|$
           pop: true
+
   FlowElse:
     - match: \b(else)\b
       scope: keyword.control.conditional.else.v
@@ -139,6 +143,7 @@ contexts:
         - include: Block
         - match: \s+|$
           pop: true
+
   FlowFor:
     - match: \b(for)\b
       scope: keyword.control.conditional.for.v
@@ -147,6 +152,7 @@ contexts:
         - include: Block
         - match: \s+|$
           pop: true
+
   FlowMatch:
     - match: \b(match)\b
       scope: keyword.control.conditional.match.v
@@ -198,7 +204,6 @@ contexts:
         3: storage.type.primitive.v
         4: storage.type.map.v
         5: storage.type.other.v
-
   TypeModifier:
     - match: (\*)+
       scope: storage.modifier.pointer.v
@@ -230,8 +235,9 @@ contexts:
   Params:
     - match: \(
       scope: punctuation.definition.params.begin.v
-      push: param_args
-  param_args:
+      push: __params
+
+  __params:
     - include: Value_min
     - match: '{{re_name_regular}}'
       scope: variable.parameter.v
@@ -241,30 +247,33 @@ contexts:
       scope: punctuation.definition.params.end.v
       pop: true
 
-  Strings:
-    - include: quoted_double
-    - include: quoted_single
-    - include: literal_char
-  quoted_double:
+  String:
+    - include: StringQDouble
+    - include: StringQSingle
+    - include: StringLiteral
+
+  StringQDouble:
     - match: \"
       scope: punctuation.string.double.begin.v
       push:
       - meta_scope: string.quoted.double.v
       - include: variable
-      - include: escaped_char
+      - include: StringEscaped
       - match: \"
         scope: punctuation.string.double.end.v
         pop: true
-  quoted_single:
+
+  StringQSingle:
     - match: \'
       scope: punctuation.string.single.begin.v
       push:
       - meta_scope: string.quoted.single.v
-      - include: escaped_char
+      - include: StringEscaped
       - match: \'
         scope: punctuation.string.single.end.v
         pop: true
-  literal_char:
+
+  StringLiteral:
     - match: '`'
       scope: punctuation.string.literal.begin.v
       push:
@@ -272,7 +281,8 @@ contexts:
       - match: '`'
         scope: punctuation.string.literal.end.v
         pop: true
-  escaped_char:
+
+  StringEscaped:
     - match: '{{re__escaped}}'
       scope: constant.character.escape.v
 
@@ -286,7 +296,7 @@ contexts:
     - include: Operator
   Value_min:
     - include: Comment
-    - include: Strings
+    - include: String
     - match: \b(mut)\b
       scope: storage.modifier.mutable.v
     - match: '{{re__number}}'
@@ -294,8 +304,6 @@ contexts:
     - include: Type
     - match: \b([A-Z]+)\b
       scope: constant.other.v
-    - match: \,|\{}
-      scope: comment.v
     - include: FunctionCall
     - include: Object
 
