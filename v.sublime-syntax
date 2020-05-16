@@ -12,7 +12,7 @@ foldingStopMarker: '^\s*[\)\}]$'
 
 variables:
   re__escaped: \\([\\tvnrbfae''"]|x\h{2}|\d{,3})
-  re__number: \b(\d+(?:\.\d+)*|0x\h{2})\b
+  re__number: \b(\d+(?:\.\d+)*|0x\h+|0o[0-7]+)\b
 
   re_name_regular: \b(?:(this|self)|([a-z_][a-z_\d]*))\b
   re_name_package: '(?:{{re_name_regular}}\.)+{{re_name_regular}}'
