@@ -1,0 +1,53 @@
+%YAML 1.2
+---
+name: V Module
+scope: source.v.mod
+file_extensions:
+  - v.mod
+contexts:
+  main:
+    - match: \b(Module)\b
+      scope: keyword.language.v
+      push:
+        - match: \{
+          push:
+            - meta_scope: meta.Module.v
+            - match: '[a-z]'
+              scope: keyword.other.v
+            - match: ':'
+              scope: keyword.operator.assign.v
+            - include: String
+            - match: \[
+              scope: punctuation.dependencies.begin.v
+              push:
+                - meta_scope: meta.Module.deps.v
+                - include: String
+                - match: \]
+                  scope: punctuation.dependencies.end.v
+                  pop: true
+            - match: \}
+              pop: true
+        - match: $
+          pop: true
+
+  String:
+    - include: StringDouble
+    - include: StringSingle
+
+  StringDouble:
+    - match: \"
+      scope: punctuation.string.double.begin.v
+      push:
+      - meta_scope: string.quoted.double.v
+      - match: \"
+        scope: punctuation.string.double.end.v
+        pop: true
+
+  StringSingle:
+    - match: \'
+      scope: punctuation.string.single.begin.v
+      push:
+      - meta_scope: string.quoted.single.v
+      - match: \'
+        scope: punctuation.string.single.end.v
+        pop: true
