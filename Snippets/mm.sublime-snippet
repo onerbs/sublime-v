@@ -1,0 +1,9 @@
+<snippet><content><![CDATA[
+module main
+
+$0
+]]></content>
+	<tabTrigger>mm</tabTrigger>
+	<scope>source.v</scope>
+	<description>main module</description>
+</snippet>

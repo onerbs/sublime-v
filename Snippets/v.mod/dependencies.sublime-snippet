@@ -1,0 +1,6 @@
+<snippet><content><![CDATA[
+dependencies: [$0]
+]]></content>
+	<tabTrigger>dependencies</tabTrigger>
+	<scope>source.v.mod</scope>
+</snippet>
