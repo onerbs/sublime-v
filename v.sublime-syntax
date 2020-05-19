@@ -5,8 +5,7 @@ scope: source.v
 file_extensions:
   - v
   - vsh
-  - v.mod
-first_line_match: ^#!\S*/v
+first_line_match: ^#!\S*/\bv\b
 foldingStartMarker: '[\{\(]$'
 foldingStopMarker: '^\s*[\)\}]$'
 
@@ -15,7 +14,7 @@ variables:
   re__number: \b(\d+(?:\.\d+)*|0x\h+|0o[0-7]+)\b
 
   re_name_regular: \b(?:(this|self)|([a-z_][a-z_\d]*))\b
-  re_name_package: '(?:{{re_name_regular}}\.)+{{re_name_regular}}'
+  re_name_package: '(?:{{re_name_regular}}\.)*{{re_name_regular}}'
   re_name_irregular: \b([A-Za-z][A-Za-z\d_]+)\b
 
   re_type_numeric: (byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64)
@@ -26,9 +25,6 @@ variables:
 
 contexts:
   main:
-    - match: \b(Module)\b
-      scope: keyword.language.v
-
     - include: Const
     - include: Function
     - include: Import
@@ -59,17 +55,17 @@ contexts:
 
   CommentBlock:
     - match: /\*
-      scope: punctuation.comment.begin.v
+      scope: punctuation.definition.comment.begin.v
       push:
         - meta_scope: comment.block.v
         - include: CommentBlock
         - include: CommentLine
         - match: \*/
-          scope: punctuation.comment.end.v
+          scope: punctuation.definition.comment.end.v
           pop: true
   CommentLine:
     - match: //|#
-      scope: punctuation.comment.begin.v
+      scope: punctuation.definition.comment.begin.v
       push:
         - meta_scope: comment.line.double-slash.v
         - include: CommentBlock
@@ -170,7 +166,7 @@ contexts:
         - match: \b(as)\b
           scope: keyword.other.alias.v
         - match: '{{re_name_package}}'
-          scope: entity.name.namespace.v
+          scope: entity.name.module.v
         - include: EOL
 
   IrregularName:
