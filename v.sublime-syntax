@@ -14,7 +14,7 @@ variables:
   re__number: \b(\d+(?:\.\d+)*|0x\h+|0o[0-7]+)\b
 
   re_name_regular: \b(?:(this|self)|([a-z_][a-z_\d]*))\b
-  re_name_package: '(?:{{re_name_regular}}\.)*{{re_name_regular}}'
+  re_name_package: '(?:{{re_name_regular}}\.)+{{re_name_regular}}'
   re_name_irregular: \b([A-Za-z][A-Za-z\d_]+)\b
 
   re_type_numeric: (byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64)
@@ -30,6 +30,10 @@ contexts:
     - include: Import
     - include: Module
     - include: Struct
+    - include: TypeAlias
+
+    - match: \b(type)\b
+      scope: keyword.declaration.type_alias.v
 
     - include: Comment
     - include: String
@@ -41,7 +45,6 @@ contexts:
     - match: \{
       scope: punctuation.definition.block.begin.v
       push:
-        - meta_scope: meta.block.v
         - include: Flow
         - include: Value
         - include: Block
@@ -75,7 +78,6 @@ contexts:
     - match: \b(const)\b
       scope: keyword.declaration.constant.v
       push:
-        - meta_scope: meta.const.v
         - include: Params
         - include: EOL
 
@@ -85,7 +87,6 @@ contexts:
     - match: \b(fn)\b
       scope: keyword.declaration.function.v
       push:
-        - meta_scope: meta.function.v
         - include: Params
         - match: '{{re_name_regular}}'
           scope: entity.name.function.v
@@ -162,10 +163,9 @@ contexts:
     - match: \b(import)\b
       scope: keyword.declaration.import.v
       push:
-        - meta_scope: meta.import.v
         - match: \b(as)\b
           scope: keyword.other.alias.v
-        - match: '{{re_name_package}}'
+        - match: '{{re_name_regular}}|{{re_name_package}}'
           scope: entity.name.module.v
         - include: EOL
 
@@ -177,8 +177,7 @@ contexts:
     - match: \b(module)\b
       scope: keyword.declaration.namespace.v
       push:
-        - meta_scope: meta.module.v
-        - match: '{{re_name_package}}'
+        - match: '{{re_name_regular}}|{{re_name_package}}'
           scope: entity.name.namespace.v
         - include: EOL
 
@@ -186,7 +185,6 @@ contexts:
     - match: \b(struct)\b
       scope: keyword.declaration.struct.v
       push:
-        - meta_scope: meta.struct.v
         - include: Type
         - include: Block
         - include: EOL
@@ -208,14 +206,6 @@ contexts:
     - match: (&)?
       scope: storage.modifier.mutable.v
 
-  Object:
-    - match: '{{re_name_package}}'
-      captures:
-        1: keyword.language.v
-        2: entity.name.object.v
-        3: keyword.language.v
-        4: entity.name.object.property.v
-
   Operator:
     - match: \b(in)\b
       scope: keyword.operator.access.v
@@ -235,8 +225,6 @@ contexts:
 
   __params:
     - include: Value_min
-    - match: '{{re_name_regular}}'
-      scope: variable.parameter.v
     - include: IrregularName
     - include: Params
     - match: \)
@@ -286,8 +274,6 @@ contexts:
     - match: \b(return|break|continue|defer|in)\b
       scope: keyword.control.flow.v
     - include: Value_min
-    - match: '{{re_name_regular}}'
-      scope: variable.other.v
     - include: IrregularName
     - include: Operator
   Value_min:
@@ -295,13 +281,28 @@ contexts:
     - include: String
     - match: \b(mut)\b
       scope: storage.modifier.mutable.v
+    - match: \b(pub)\b
+      scope: storage.modifier.public.v
+    - match: \b(__global)\b
+      scope: storage.modifier.global.v
     - match: '{{re__number}}'
       scope: constant.numeric.v
     - include: Type
     - match: \b([A-Z]+)\b
       scope: constant.other.v
     - include: FunctionCall
-    - include: Object
+    # Variable
+    - match: '{{re_name_regular}}'
+      captures:
+        1: keyword.language.v
+        2: variable.other.v
+    # Object
+    - match: '{{re_name_package}}'
+      captures:
+        1: keyword.language.v
+        2: entity.name.object.v
+        3: keyword.language.v
+        4: variable.other.v
 
   EOL:
     - match: $
