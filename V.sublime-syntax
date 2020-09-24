@@ -96,40 +96,36 @@ contexts:
         - include: EOL
 
   Function:
-    - match: \b(pub)\b
-      scope: storage.modifier.public.v
     - match: \b(fn)\b
       scope: keyword.declaration.function.v
       push:
         - include: Params
-        - match: '{{re_name_regular}}'
-          scope: entity.name.function.v
+        - match: \b{{re_name_regular}}\b
+          captures:
+            1: invalid.illegal.v
+            2: entity.name.function.v
           push:
             - match: \?
               scope: storage.modifier.optional.v
             - include: Params
-            - include: Type
-            - match: '{{re_name_regular}}'
-              scope: storage.type.other.v
+            - include: Types
+            - match: \b{{re_name_regular}}\b
+              captures:
+                1: invalid.illegal.v
+                2: storage.type.other.v
             - include: Block
             - include: EOL
         - include: EOL
 
   FunctionCall:
-    - match: '{{re_name_regular}}\s*(\()'
-      captures:
-        1: keyword.language.v
-        2: entity.name.function.v
-        3: punctuation.function.params.begin.v
-      push: __params
     - match: '{{re_name_package}}\s*(\()'
       captures:
-        1: keyword.language.v
+        1: keyword.language.this.v
         2: entity.name.object.v
-        3: keyword.language.v
+        3: invalid.illegal.v
         4: entity.name.function.v
         5: punctuation.function.params.begin.v
-      push: __params
+    - include: Params
 
   Flow:
     - include: FlowIf
