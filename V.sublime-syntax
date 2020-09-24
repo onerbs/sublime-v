@@ -93,44 +93,8 @@ contexts:
         - include: EOL
 
   Flow:
-    - include: FlowIf
-    - include: FlowElse
-    - include: FlowFor
-    - include: FlowMatch
-
-  FlowIf:
-    - match: \b(if)\b
-      scope: keyword.control.conditional.if.v
-      push:
-        - include: FunctionCall
-        - include: Block
-        - match: \s+|$
-          pop: true
-
-  FlowElse:
-    - match: \b(else)\b
-      scope: keyword.control.conditional.else.v
-      push:
-        - include: FlowIf
-        - include: Block
-        - match: \s+|$
-          pop: true
-
-  FlowFor:
-    - match: \b(for)\b
-      scope: keyword.control.conditional.for.v
-      push:
-        - include: Block
-        - match: \s+|$
-          pop: true
-
-  FlowMatch:
-    - match: \b(match)\b
-      scope: keyword.control.conditional.match.v
-      push:
-        - include: Block
-        - match: \s+|$
-          pop: true
+    - match: \b(if|else|for|match)\b
+      scope: keyword.control.flow.v
 
   Function:
     - match: \b(fn)\b
