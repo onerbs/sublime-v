@@ -200,22 +200,24 @@ contexts:
         - include: Block
         - include: EOL
 
-  Type:
+  Types:
     - include: TypeModifier
-    - match: '{{re_types}}'
-      captures:
-        1: keyword.language.v
-        2: storage.type.numeric.v
-        3: storage.type.primitive.v
-        4: storage.type.map.v
-        5: storage.type.other.v
+    - match: \b{{re_type_numeric}}\b
+      scope: storage.type.numeric.v
+    - match: \b{{re_type_primitive}}\b
+      scope: storage.type.primitive.v
+    - match: \b(map)\b
+      scope: storage.type.map.v
+    - match: \b{{re_type_class}}\b
+      scope: storage.type.other.v
+
   TypeModifier:
-    - match: (\*)+
-      scope: storage.modifier.pointer.v
     - match: (\[])+
       scope: storage.modifier.array.v
-    - match: (&)?
-      scope: storage.modifier.mutable.v
+    - match: '&'
+      scope: storage.modifier.in-heap.v
+    - match: \*+
+      scope: storage.modifier.pointer.v
 
   Operator:
     - match: \b(in)\b
