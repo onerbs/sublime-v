@@ -92,38 +92,6 @@ contexts:
         - include: Params
         - include: EOL
 
-  Function:
-    - match: \b(fn)\b
-      scope: keyword.declaration.function.v
-      push:
-        - include: Params
-        - match: \b{{re_name_regular}}\b
-          captures:
-            1: invalid.illegal.v
-            2: entity.name.function.v
-          push:
-            - match: \?
-              scope: storage.modifier.optional.v
-            - include: Params
-            - include: Types
-            - match: \b{{re_name_regular}}\b
-              captures:
-                1: invalid.illegal.v
-                2: storage.type.other.v
-            - include: Block
-            - include: EOL
-        - include: EOL
-
-  FunctionCall:
-    - match: '{{re_name_package}}\s*(\()'
-      captures:
-        1: keyword.language.this.v
-        2: entity.name.object.v
-        3: invalid.illegal.v
-        4: entity.name.function.v
-        5: punctuation.function.params.begin.v
-    - include: Params
-
   Flow:
     - include: FlowIf
     - include: FlowElse
@@ -164,6 +132,38 @@ contexts:
         - match: \s+|$
           pop: true
 
+  Function:
+    - match: \b(fn)\b
+      scope: keyword.declaration.function.v
+      push:
+        - include: Params
+        - match: \b{{re_name_regular}}\b
+          captures:
+            1: invalid.illegal.v
+            2: entity.name.function.v
+          push:
+            - match: \?
+              scope: storage.modifier.optional.v
+            - include: Params
+            - include: Types
+            - match: \b{{re_name_regular}}\b
+              captures:
+                1: invalid.illegal.v
+                2: storage.type.other.v
+            - include: Block
+            - include: EOL
+        - include: EOL
+
+  FunctionCall:
+    - match: '{{re_name_package}}\s*(\()'
+      captures:
+        1: keyword.language.this.v
+        2: entity.name.object.v
+        3: invalid.illegal.v
+        4: entity.name.function.v
+        5: punctuation.function.params.begin.v
+    - include: Params
+
   Import:
     - match: \b(import)\b
       scope: keyword.declaration.import.v
@@ -199,33 +199,6 @@ contexts:
         4: constant.numeric.decimal.v
         5: constant.numeric.v
         6: invalid.illegal.v
-
-  Struct:
-    - match: \b(struct)\b
-      scope: keyword.declaration.struct.v
-      push:
-        - include: Types
-        - include: Block
-        - include: EOL
-
-  Types:
-    - include: TypeModifier
-    - match: \b{{re_type_numeric}}\b
-      scope: storage.type.numeric.v
-    - match: \b{{re_type_primitive}}\b
-      scope: storage.type.primitive.v
-    - match: \b(map)\b
-      scope: storage.type.map.v
-    - match: \b{{re_type_class}}\b
-      scope: storage.type.other.v
-
-  TypeModifier:
-    - match: (\[])+
-      scope: storage.modifier.array.v
-    - match: '&'
-      scope: storage.modifier.in-heap.v
-    - match: \*+
-      scope: storage.modifier.pointer.v
 
   Operator:
     - match: \b(in)\b
@@ -285,6 +258,33 @@ contexts:
   StringEscaped:
     - match: '{{re__escaped}}'
       scope: constant.character.escape.v
+
+  Struct:
+    - match: \b(struct)\b
+      scope: keyword.declaration.struct.v
+      push:
+        - include: Types
+        - include: Block
+        - include: EOL
+
+  Types:
+    - include: TypeModifier
+    - match: \b{{re_type_numeric}}\b
+      scope: storage.type.numeric.v
+    - match: \b{{re_type_primitive}}\b
+      scope: storage.type.primitive.v
+    - match: \b(map)\b
+      scope: storage.type.map.v
+    - match: \b{{re_type_class}}\b
+      scope: storage.type.other.v
+
+  TypeModifier:
+    - match: (\[])+
+      scope: storage.modifier.array.v
+    - match: '&'
+      scope: storage.modifier.in-heap.v
+    - match: \*+
+      scope: storage.modifier.pointer.v
 
   Value:
     - include: Comment
