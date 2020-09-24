@@ -10,6 +10,10 @@ foldingStartMarker: '[\{\(]$'
 foldingStopMarker: '^\s*[\)\}]$'
 
 variables:
+  re_question: \bQ:\s.*\?
+  re_todo: \b[a-zA-Z]+:\s.*\.
+  re_url: \b(ht|f)tps?://(www.)?[A-Za-z]\S+
+
   re__escaped: \\([\\tvnrbfae''"]|x\h{2}|\d{,3})
   re__number: \b(\d+(?:\.\d+)*|0x\h+|0o[0-7]+)\b
 
@@ -61,6 +65,7 @@ contexts:
       scope: punctuation.definition.comment.begin.v
       push:
         - meta_scope: comment.block.v
+        - include: CommentTags
         - include: CommentBlock
         - include: CommentLine
         - match: \*/
@@ -71,8 +76,17 @@ contexts:
       scope: punctuation.definition.comment.begin.v
       push:
         - meta_scope: comment.line.double-slash.v
+        - include: CommentTags
         - include: CommentBlock
         - include: EOL
+
+  CommentTags:
+    - match: '{{re_question}}'
+      scope: variable.parameter.question.v
+    - match: '{{re_todo}}'
+      scope: keyword.todo.v
+    - match: '{{re_url}}'
+      scope: constant.language.url.v
 
   Const:
     - match: \b(const)\b
