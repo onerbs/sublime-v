@@ -15,7 +15,7 @@ variables:
   re_url: \b(ht|f)tps?://(www.)?[A-Za-z]\S+
 
   re__escaped: \\([\\tvnrbfae''"]|x\h{2}|\d{,3})
-  re__number: \b(\d+(?:\.\d+)*|0x\h+|0o[0-7]+)\b
+  re__number: (?:(0b[01]+)|(0o[0-7]+)|(0x\h+)|(\d+\.\d+)|(\d+))
 
   re_name_regular: \b(?:(this|self)|([a-z_][a-z_\d]*))\b
   re_name_package: '(?:{{re_name_regular}}\.)+{{re_name_regular}}'
@@ -195,6 +195,16 @@ contexts:
           scope: entity.name.namespace.v
         - include: EOL
 
+  Numbers:
+    - match: '{{re__number}}(\.\d+)*'
+      captures:
+        1: constant.numeric.binary.v
+        2: constant.numeric.octal.v
+        3: constant.numeric.hexadecimal.v
+        4: constant.numeric.decimal.v
+        5: constant.numeric.v
+        6: invalid.illegal.v
+
   Struct:
     - match: \b(struct)\b
       scope: keyword.declaration.struct.v
@@ -299,8 +309,7 @@ contexts:
       scope: storage.modifier.public.v
     - match: \b(__global)\b
       scope: storage.modifier.global.v
-    - match: '{{re__number}}'
-      scope: constant.numeric.v
+    - include: Number
     - include: Type
     - match: \b([A-Z]+)\b
       scope: constant.other.v
