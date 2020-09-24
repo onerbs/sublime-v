@@ -18,7 +18,7 @@ variables:
   re__number: (?:(0b[01]+)|(0o[0-7]+)|(0x\h+)|(\d+\.\d+)|(\d+))
 
   re_name_regular: \b(?:(this|self)|([a-z_][a-z_\d]*))\b
-  re_name_package: '(?:{{re_name_regular}}\.)+{{re_name_regular}}'
+  re_name_package: (?:{{re_name_regular}}\.)*{{re_name_regular}}
 
   re_type_numeric: (byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64)
   re_type_primitive: (bool|byteptr|rune|string|voidptr)
@@ -67,11 +67,12 @@ contexts:
         - match: \*/
           scope: punctuation.definition.comment.end.v
           pop: true
+
   CommentLine:
     - match: //|#
       scope: punctuation.definition.comment.begin.v
       push:
-        - meta_scope: comment.line.double-slash.v
+        - meta_scope: comment.line.v
         - include: CommentTags
         - include: CommentBlock
         - include: EOL
@@ -133,7 +134,7 @@ contexts:
     - match: \b(if)\b
       scope: keyword.control.conditional.if.v
       push:
-        - include: Value
+        - include: FunctionCall
         - include: Block
         - match: \s+|$
           pop: true
@@ -151,7 +152,6 @@ contexts:
     - match: \b(for)\b
       scope: keyword.control.conditional.for.v
       push:
-        - include: Value
         - include: Block
         - match: \s+|$
           pop: true
@@ -160,7 +160,6 @@ contexts:
     - match: \b(match)\b
       scope: keyword.control.conditional.match.v
       push:
-        - include: Value
         - include: Block
         - match: \s+|$
           pop: true
@@ -197,7 +196,7 @@ contexts:
     - match: \b(struct)\b
       scope: keyword.declaration.struct.v
       push:
-        - include: Type
+        - include: Types
         - include: Block
         - include: EOL
 
@@ -223,11 +222,11 @@ contexts:
       scope: keyword.operator.access.v
     - match: \:=|\:|=
       scope: keyword.operator.assignment.v
-    - match: <=|>=|<|>|==|!=
+    - match: <=|>=|<|>|==|!=|\b(is|or)\b
       scope: keyword.operator.comparison.v
     - match: \.\.
       scope: keyword.operator.range.v
-    - match: ([\|<>=\*/&%\+\-\.]+)
+    - match: ([\|<>=\*/&%\+\-]+)
       scope: keyword.operator.v
 
   Params:
@@ -253,7 +252,6 @@ contexts:
       scope: punctuation.string.double.begin.v
       push:
       - meta_scope: string.quoted.double.v
-      - include: variable
       - include: StringEscaped
       - match: \"
         scope: punctuation.string.double.end.v
