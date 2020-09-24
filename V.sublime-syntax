@@ -19,7 +19,6 @@ variables:
 
   re_name_regular: \b(?:(this|self)|([a-z_][a-z_\d]*))\b
   re_name_package: '(?:{{re_name_regular}}\.)+{{re_name_regular}}'
-  re_name_irregular: \b([A-Za-z][A-Za-z\d_]+)\b
 
   re_type_numeric: (byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64)
   re_type_primitive: (bool|byteptr|rune|string|voidptr)
@@ -179,10 +178,6 @@ contexts:
           scope: entity.name.module.v
         - include: EOL
 
-  IrregularName:
-    - match: '{{re_name_irregular}}'
-      scope: invalid.illegal.v
-
   Module:
     - match: \b(module)\b
       scope: keyword.declaration.namespace.v
@@ -291,36 +286,26 @@ contexts:
       scope: constant.character.escape.v
 
   Value:
-    - match: \b(return|break|continue|defer|in)\b
-      scope: keyword.control.flow.v
-    - include: Value_min
-    - include: IrregularName
-    - include: Operator
-  Value_min:
     - include: Comment
     - include: String
-    - match: \b(mut)\b
-      scope: storage.modifier.mutable.v
-    - match: \b(pub)\b
-      scope: storage.modifier.public.v
-    - match: \b(__global)\b
-      scope: storage.modifier.global.v
-    - include: Number
-    - include: Type
+    - match: \b(true|false)\b
+      scope: constant.language.boolean.v
+    - match: \b(return|break|continue|defer)\b
+      scope: keyword.control.flow.v
+    - include: Numbers
+    - include: Modifiers
+    # - match: TODO
+    #   scope: invalid.illegal.v
     - match: \b([A-Z]+)\b
       scope: constant.other.v
+    - include: Types
+    - include: Operator
     - include: FunctionCall
-    # Variable
-    - match: '{{re_name_regular}}'
-      captures:
-        1: keyword.language.v
-        2: variable.other.v
-    # Object
     - match: '{{re_name_package}}'
       captures:
-        1: keyword.language.v
+        1: keyword.language.this.v
         2: entity.name.object.v
-        3: keyword.language.v
+        3: keyword.language.this.v
         4: variable.other.v
 
   EOL:
