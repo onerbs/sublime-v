@@ -39,13 +39,11 @@ contexts:
 
     - include: Value
     - include: Block
-    - include: Flow
 
   Block:
     - match: \{
       scope: punctuation.definition.block.begin.v
       push:
-        - include: Flow
         - include: Value
         - include: Block
         - match: '}'
@@ -91,10 +89,6 @@ contexts:
       push:
         - include: Params
         - include: EOL
-
-  Flow:
-    - match: \b(if|else|for|match)\b
-      scope: keyword.control.flow.v
 
   Function:
     - match: \b(fn)\b
@@ -255,7 +249,7 @@ contexts:
     - include: String
     - match: \b(true|false)\b
       scope: constant.language.boolean.v
-    - match: \b(return|break|continue|defer)\b
+    - match: \b(if|else|for|match|return|break|continue|defer)\b
       scope: keyword.control.flow.v
     - include: Numbers
     - include: Modifiers
