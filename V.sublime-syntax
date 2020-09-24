@@ -234,15 +234,11 @@ contexts:
   Params:
     - match: \(
       scope: punctuation.definition.params.begin.v
-      push: __params
-
-  __params:
-    - include: Value_min
-    - include: IrregularName
-    - include: Params
-    - match: \)
-      scope: punctuation.definition.params.end.v
-      pop: true
+      push:
+        - include: Value
+        - match: \)
+          scope: punctuation.definition.params.end.v
+          pop: true
 
   String:
     - include: StringQDouble
