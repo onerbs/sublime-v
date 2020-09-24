@@ -203,7 +203,7 @@ contexts:
   Operator:
     - match: \b(in)\b
       scope: keyword.operator.access.v
-    - match: \:=|\:|=
+    - match: \:=|\:|=|<<
       scope: keyword.operator.assignment.v
     - match: <=|>=|<|>|==|!=|\b(is|or)\b
       scope: keyword.operator.comparison.v
