@@ -28,18 +28,15 @@ variables:
 
 contexts:
   main:
-    - include: Const
-    - include: Function
     - include: Import
     - include: Module
+    - include: Const
     - include: Struct
-    - include: TypeAlias
+    - include: Function
 
     - match: \b(type)\b
       scope: keyword.declaration.type_alias.v
 
-    - include: Comment
-    - include: String
     - include: Value
     - include: Block
     - include: Flow
