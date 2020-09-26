@@ -26,12 +26,17 @@ contexts:
   main:
     - include: Import
     - include: Module
+    - include: Attributes
     - include: Const
     - include: Struct
     - include: Function
 
     - include: Value
     - include: Block
+
+  Attributes:
+    - match: \[\S+\]
+      scope: keyword.language.attribute.v
 
   Block:
     - match: \{
@@ -223,7 +228,9 @@ contexts:
       scope: keyword.declaration.struct.v
       push:
         - include: Types
-        - include: Block
+          set: Block
+          with_prototype:
+            - include: Attributes
         - include: EOL
 
   Types:
