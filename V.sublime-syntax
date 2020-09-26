@@ -20,8 +20,8 @@ variables:
   re_name_regular: \b(?:(this|self)|([a-z_][a-z_\d]*))\b
   re_name_package: (?:{{re_name_regular}}\.)*{{re_name_regular}}
 
-  re_type_numeric: (byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64)
-  re_type_primitive: (bool|byteptr|rune|string|voidptr)
+  re_type_numeric: (any_(?:int|float)|byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64)
+  re_type_primitive: (any|bool|chan|rune|string|size_t|(?:byte|char|void)ptr)
   re_type_class: ([A-Z][A-Za-z\d_]*)
 
   re_types: '\b(?:(is|or|true|false)|{{re_type_numeric}}|{{re_type_primitive}}|(map)|{{re_type_class}})\b'
