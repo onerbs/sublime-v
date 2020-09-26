@@ -48,6 +48,12 @@ contexts:
           scope: punctuation.definition.block.end.v
           pop: true
 
+  Builtins:
+    - match: \b(exit|error|panic|print(ln|_backtrace)?)\b
+      scope: support.function.builtin.v
+    - match: \b(it|this|self)\b
+      scope: variable.language.v
+
   Comment:
     - include: CommentBlock
     - include: CommentLine
@@ -257,6 +263,7 @@ contexts:
   Value:
     - include: Comment
     - include: String
+    - include: Builtins
     - match: \b(true|false)\b
       scope: constant.language.boolean.v
     - match: \b(if|else|for|match|return|break|continue|defer)\b
