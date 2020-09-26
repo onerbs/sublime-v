@@ -2,12 +2,10 @@
 ---
 name: V
 scope: source.v
-file_extensions:
-  - v
-  - vsh
-first_line_match: ^#!\S*/\bv\b
+file_extensions: [v, vsh]
 foldingStartMarker: '[\{\(]$'
 foldingStopMarker: '^\s*[\)\}]$'
+first_line_match: ^#!\S*/\bv\b
 
 variables:
   re_question: \bQ:\s.*\?
@@ -24,8 +22,6 @@ variables:
   re_type_primitive: (any|bool|chan|rune|string|size_t|(?:byte|char|void)ptr)
   re_type_class: ([A-Z][A-Za-z\d_]*)
 
-  re_types: '\b(?:(is|or|true|false)|{{re_type_numeric}}|{{re_type_primitive}}|(map)|{{re_type_class}})\b'
-
 contexts:
   main:
     - include: Import
@@ -33,9 +29,6 @@ contexts:
     - include: Const
     - include: Struct
     - include: Function
-
-    - match: \b(type)\b
-      scope: keyword.declaration.type_alias.v
 
     - include: Value
     - include: Block
@@ -46,7 +39,7 @@ contexts:
       push:
         - include: Value
         - include: Block
-        - match: '}'
+        - match: \}
           scope: punctuation.definition.block.end.v
           pop: true
 
@@ -239,7 +232,7 @@ contexts:
   TypeModifier:
     - match: (\[])+
       scope: storage.modifier.array.v
-    - match: '&'
+    - match: \&
       scope: storage.modifier.in-heap.v
     - match: \*+
       scope: storage.modifier.pointer.v
