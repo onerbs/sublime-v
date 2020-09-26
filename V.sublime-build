@@ -2,8 +2,12 @@
   "selector": "source.v",
   "file_patterns": ["*.v", "*.vsh"],
   "working_dir": "$file_path",
-  "shell_cmd": "v $file_name",
+  "shell_cmd": "v run $file_name",
   "variants": [
+    {
+      "name": "Build",
+      "shell_cmd": "v $file_name"
+    },
     {
       "name": "Dist",
       "shell_cmd": "v -prod $file_name"
@@ -19,10 +23,6 @@
     {
       "name": "Test Module",
       "shell_cmd": "v test ."
-    },
-    {
-      "name": "Run",
-      "shell_cmd": "v run $file_name"
     },
     {
       "name": "Format",
