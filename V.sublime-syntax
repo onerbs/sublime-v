@@ -134,6 +134,20 @@ contexts:
           scope: entity.name.module.v
         - include: EOL
 
+  Keywords:
+    - match: \b(assert)\b
+      scope: keyword.language.assert.v
+    - match: \b(enum)\b
+      scope: storage.type.enum.v
+    - match: \b(interface)\b
+      scope: keyword.declaration.interface.v
+    - match: \b(type)\b
+      scope: keyword.declaration.type_alias.v
+    - match: \b(unsafe)\b
+      scope: keyword.language.unsafe.v
+    - match: \b(asm|atomic|embed|go(to)?|lock|none|or|rlock|select|shared|sizeof|static|typeof|union|unsafe)\b
+      scope: keyword.language.v
+
   Modifiers:
     - match: \b(mut)\b
       scope: storage.modifier.mutable.v
@@ -264,6 +278,7 @@ contexts:
     - include: Comment
     - include: String
     - include: Builtins
+    - include: Keywords
     - match: \b(true|false)\b
       scope: constant.language.boolean.v
     - match: \b(if|else|for|match|return|break|continue|defer)\b
