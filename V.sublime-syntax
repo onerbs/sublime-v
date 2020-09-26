@@ -15,7 +15,7 @@ variables:
   re_url: \b(ht|f)tps?://(www.)?[A-Za-z]\S+
 
   re__escaped: \\([\\tvnrbfae''"]|x\h{2}|\d{,3})
-  re__number: (?:(0b[01]+)|(0o[0-7]+)|(0x\h+)|(\d+\.\d+)|(\d+))
+  re__number: (?:(0b[01_]+)|(0o[0-7_]+)|(0x[\h_]+)|([\d_]+\.[\d_]+)|([\d_]+))
 
   re_name_regular: \b(?:(this|self)|([a-z_][a-z_\d]*))\b
   re_name_package: (?:{{re_name_regular}}\.)*{{re_name_regular}}
