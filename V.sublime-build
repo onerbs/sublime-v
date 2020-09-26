@@ -1,6 +1,6 @@
 {
-  "selector": ["source.v"],
-  "file_patterns": ["*.v"],
+  "selector": "source.v",
+  "file_patterns": ["*.v", "*.vsh"],
   "working_dir": "$file_path",
   "shell_cmd": "v $file_name",
   "variants": [
