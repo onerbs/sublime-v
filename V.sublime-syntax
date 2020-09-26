@@ -74,7 +74,7 @@ contexts:
     - match: '{{re_todo}}'
       scope: keyword.todo.v
     - match: '{{re_url}}'
-      scope: constant.language.url.v
+      scope: constant.other.url.v
 
   Const:
     - match: \b(const)\b
@@ -106,8 +106,8 @@ contexts:
   FunctionCall:
     - match: '{{re_name_package}}\s*(\()'
       captures:
-        1: keyword.language.this.v
-        2: entity.name.object.v
+        1: variable.language.v
+        2: variable.other.v
         3: invalid.illegal.v
         4: entity.name.function.v
         5: punctuation.function.params.begin.v
@@ -255,9 +255,9 @@ contexts:
     - include: FunctionCall
     - match: '{{re_name_package}}'
       captures:
-        1: keyword.language.this.v
-        2: entity.name.object.v
-        3: keyword.language.this.v
+        1: variable.language.v
+        2: variable.other.v
+        3: variable.language.v
         4: variable.other.v
 
   EOL:
