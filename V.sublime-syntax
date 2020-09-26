@@ -93,8 +93,6 @@ contexts:
             1: invalid.illegal.v
             2: entity.name.function.v
           push:
-            - match: \?
-              scope: storage.modifier.optional.v
             - include: Params
             - include: Types
             - match: \b{{re_name_regular}}\b
@@ -234,6 +232,8 @@ contexts:
       scope: storage.modifier.array.v
     - match: \&
       scope: storage.modifier.in-heap.v
+    - match: \?
+      scope: storage.modifier.optional.v
     - match: \*+
       scope: storage.modifier.pointer.v
 
