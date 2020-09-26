@@ -281,7 +281,7 @@ contexts:
     - include: Keywords
     - match: \b(true|false)\b
       scope: constant.language.boolean.v
-    - match: \b(if|else|for|match|return|break|continue|defer)\b
+    - match: \b(if|else|for|match|select|return|break|continue|defer)\b
       scope: keyword.control.flow.v
     - include: Numbers
     - include: Modifiers
