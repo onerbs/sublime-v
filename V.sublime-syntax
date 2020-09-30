@@ -124,6 +124,13 @@ contexts:
         5: punctuation.function.params.begin.v
     - include: Params
 
+  Generics:
+    - match: (<){{re_type_class}}(>)
+      captures:
+        1: punctuation.definition.generic.begin.v
+        2: storage.type.generic.v
+        3: punctuation.definition.generic.end.v
+
   Import:
     - match: \b(import)\b
       scope: keyword.declaration.import.v
@@ -263,6 +270,7 @@ contexts:
       scope: storage.type.map.v
     - match: \b{{re_type_class}}\b
       scope: storage.type.other.v
+    - include: Generics
 
   TypeModifier:
     - match: (\[])+
