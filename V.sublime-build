@@ -25,8 +25,8 @@
       "shell_cmd": "v test ."
     },
     {
-      "name": "Format",
-      "shell_cmd": "v fmt $file_name > _$file_name && rm $file_name && mv _$file_name $file_name"
+      "name": "Format file",
+      "shell_cmd": "v fmt -w $file_name"
     },
     {
       "name": "Profile",
