@@ -29,7 +29,6 @@ contexts:
     - include: Attributes
     - include: Const
     - include: Struct
-    - include: Function
 
     - include: Value
     - include: Block
@@ -92,26 +91,6 @@ contexts:
       scope: keyword.declaration.constant.v
       push:
         - include: Params
-        - include: EOL
-
-  Function:
-    - match: \b(fn)\b
-      scope: keyword.declaration.function.v
-      push:
-        - include: Params
-        - match: \b{{re_name_regular}}\b
-          captures:
-            1: invalid.illegal.v
-            2: entity.name.function.v
-          push:
-            - include: Params
-            - include: Types
-            - match: \b{{re_name_regular}}\b
-              captures:
-                1: invalid.illegal.v
-                2: storage.type.other.v
-            - include: Block
-            - include: EOL
         - include: EOL
 
   FunctionCall:
