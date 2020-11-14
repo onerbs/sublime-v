@@ -131,7 +131,7 @@ contexts:
       scope: keyword.declaration.type_alias.v
     - match: \b(unsafe)\b
       scope: keyword.language.unsafe.v
-    - match: \b(asm|atomic|embed|go(to)?|lock|none|or|rlock|select|shared|sizeof|static|typeof|union|unsafe)\b
+    - match: \b(asm|atomic|embed|go(to)?|lock|none|or|rlock|shared|sizeof|static|typeof|union|unsafe)\b
       scope: keyword.language.v
 
   Modifiers:
@@ -238,9 +238,7 @@ contexts:
       scope: keyword.declaration.struct.v
       push:
         - include: Types
-          set: Block
-          with_prototype:
-            - include: Attributes
+        - include: Block
         - include: EOL
 
   Types:
