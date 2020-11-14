@@ -15,9 +15,9 @@ variables:
   re__escaped: \\([\\tvnrbfae''"]|x\h{2}|\d{,3})
   re__number: (?:(0b[01_]+)|(0o[0-7_]+)|(0x[\h_]+)|([\d_]+\.[\d_]+)|([\d_]+))
 
-  re_name_regular: \b(?:(this|self)|([a-z_][a-z_\d]*))\b
-  re_name_package: (?:{{re_name_regular}}\.)*{{re_name_regular}}
+  re_name_regular: \b([a-z_][a-z_\d]*)\b
 
+  re_builtin: \b(exit|error|panic|e?print(?:ln)?|print_backtrace?)\b
   re_type_numeric: (any_(?:int|float)|byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64)
   re_type_primitive: (any|bool|chan|rune|string|size_t|(?:byte|char|void)ptr)
   re_type_class: ([A-Z][A-Za-z\d_]*)
@@ -48,8 +48,16 @@ contexts:
           pop: true
 
   Builtins:
-    - match: \b(exit|error|panic|print(ln|_backtrace)?)\b
-      scope: support.function.builtin.v
+    - match: (?:{{re_builtin}}|{{re_name_regular}})\s*(\()
+      captures:
+        1: support.function.builtin.v
+        2: entity.name.function.v
+        3: punctuation.definition.params.begin.v
+      push:
+        - include: Value
+        - match: \)
+          scope: punctuation.definition.params.end.v
+          pop: true
     - match: \b(it|this|self)\b
       scope: variable.language.v
 
@@ -93,16 +101,6 @@ contexts:
         - include: Params
         - include: EOL
 
-  FunctionCall:
-    - match: '{{re_name_package}}\s*(\()'
-      captures:
-        1: variable.language.v
-        2: variable.other.v
-        3: invalid.illegal.v
-        4: entity.name.function.v
-        5: punctuation.function.params.begin.v
-    - include: Params
-
   Generics:
     - match: (<){{re_type_class}}(>)
       captures:
@@ -116,7 +114,7 @@ contexts:
       push:
         - match: \b(as)\b
           scope: keyword.other.alias.v
-        - match: '{{re_name_regular}}|{{re_name_package}}'
+        - match: '{{re_name_regular}}'
           scope: entity.name.module.v
         - include: EOL
 
@@ -148,7 +146,7 @@ contexts:
     - match: \b(module)\b
       scope: keyword.declaration.namespace.v
       push:
-        - match: '{{re_name_regular}}|{{re_name_package}}'
+        - match: '{{re_name_regular}}'
           scope: entity.name.namespace.v
         - include: EOL
 
@@ -270,8 +268,9 @@ contexts:
   Value:
     - include: Comment
     - include: String
-    - include: Builtins
     - include: Keywords
+    - include: Params
+    - include: Builtins
     - match: \b(true|false)\b
       scope: constant.language.boolean.v
     - match: \b(if|else|for|match|select|return|break|continue|defer)\b
@@ -284,13 +283,8 @@ contexts:
       scope: constant.other.v
     - include: Types
     - include: Operator
-    - include: FunctionCall
-    - match: '{{re_name_package}}'
-      captures:
-        1: variable.language.v
-        2: variable.other.v
-        3: variable.language.v
-        4: variable.other.v
+    - match: '{{re_name_regular}}'
+      scope: variable.other.v
 
   EOL:
     - match: $
