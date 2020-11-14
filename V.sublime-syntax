@@ -9,7 +9,7 @@ first_line_match: ^#!\S*/\bv\b
 
 variables:
   re_question: \bQ:\s.*\?
-  re_todo: \b[a-zA-Z]+:\s.*\.
+  re_todo: \b[a-zA-Z]+:\s.*$
   re_url: \b(ht|f)tps?://(www.)?[A-Za-z]\S+
 
   re__escaped: \\([\\tvnrbfae''"]|x\h{2}|\d{,3})
@@ -80,11 +80,11 @@ contexts:
 
   CommentTags:
     - match: '{{re_question}}'
-      scope: variable.parameter.question.v
+      scope: comment.tag.question.v
     - match: '{{re_todo}}'
-      scope: keyword.todo.v
+      scope: comment.tag.todo.v
     - match: '{{re_url}}'
-      scope: constant.other.url.v
+      scope: comment.tag.url.v
 
   Const:
     - match: \b(const)\b
