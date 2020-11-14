@@ -1,8 +1,8 @@
 {
+  "target": "vlang_builder",
   "selector": "source.v",
   "file_patterns": ["*.v", "*.vsh"],
   "working_dir": "$file_path",
-  "shell_cmd": "v run $file_name",
   "variants": [
     {
       "name": "Compile",
