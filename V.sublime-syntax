@@ -125,6 +125,8 @@ contexts:
       scope: keyword.language.assert.v
     - match: \b(enum)\b
       scope: storage.type.enum.v
+    - match: \b(fn)\b
+      scope: keyword.declaration.function.v
     - match: \b(interface)\b
       scope: keyword.declaration.interface.v
     - match: \b(type)\b
@@ -163,6 +165,8 @@ contexts:
   Operator:
     - match: \b(in)\b
       scope: keyword.operator.access.v
+    - match: \|
+      scope: keyword.operator.sumtype.v
     - match: \|\|
       scope: keyword.operator.or.v
     - match: \&\&
@@ -173,14 +177,16 @@ contexts:
       scope: keyword.operator.arrow.v
     - match: \!
       scope: keyword.operator.not.v
-    - match: \:=|\:|<<
+    - match: <<
+      scope: keyword.operator.append.v
+    - match: \:=?
       scope: keyword.operator.assignment.v
     - match: ([<>=!]=)|<|>|\b(is)\b
       scope: keyword.operator.comparison.v
     - match: \=
       scope: keyword.operator.assignment.v
-    - match: '[\|\*/%\+\-]'
-      scope: keyword.operator.v
+    - match: '[\*\+%/-]'
+      scope: keyword.operator.arithmetic.v
 
   Params:
     - match: \(
