@@ -26,6 +26,7 @@ contexts:
   main:
     - include: Module
     - include: Import
+    - include: Include
     - include: Attributes
     - include: Const
     - include: Struct
@@ -116,6 +117,19 @@ contexts:
           scope: keyword.other.alias.v
         - match: '{{re_name_regular}}'
           scope: entity.name.module.v
+        - include: EOL
+
+  Include:
+    - match: '#include'
+      scope: keyword.control.import.include.v
+      set:
+        - match: '<'
+          scope: punctuation.definition.string.begin.v
+          push:
+            - meta_scope: string.quoted.other.v
+            - match: '>'
+              scope: punctuation.definition.string.end.v
+              pop: true
         - include: EOL
 
   Keywords:
