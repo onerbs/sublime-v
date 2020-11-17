@@ -207,6 +207,14 @@ contexts:
           scope: punctuation.definition.params.end.v
           pop: true
 
+  Punctuation:
+    - match: '\.'
+      scope: punctuation.accessor.v
+    - match: ','
+      scope: punctuation.separator.v
+    - match: '[\[\]]'
+      scope: punctuation.section.brackets.v
+
   Rune:
     - match: '`'
       scope: punctuation.definition.rune.begin.v
@@ -293,6 +301,7 @@ contexts:
       scope: constant.other.v
     - include: Types
     - include: Operator
+    - include: Punctuation
     - include: FunctionCall
     - match: '{{re_name_regular}}'
       scope: variable.other.v
