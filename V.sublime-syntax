@@ -299,10 +299,10 @@ contexts:
     #   scope: invalid.illegal.v
     - match: \b([A-Z]+)\b
       scope: constant.other.v
-    - include: Types
     - include: Operator
     - include: Punctuation
     - include: FunctionCall
+    - include: Types
     - match: '{{re_name_regular}}'
       scope: variable.other.v
 
