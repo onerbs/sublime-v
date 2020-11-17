@@ -234,6 +234,7 @@ contexts:
       scope: punctuation.definition.string.begin.v
       push:
       - meta_scope: string.quoted.double.v
+      - include: StringInterpolation
       - include: StringEscaped
       - match: \"
         scope: punctuation.definition.string.end.v
@@ -244,10 +245,30 @@ contexts:
       scope: punctuation.definition.string.begin.v
       push:
       - meta_scope: string.quoted.single.v
+      - include: StringInterpolation
       - include: StringEscaped
       - match: \'
         scope: punctuation.definition.string.end.v
         pop: true
+
+  StringInterpolation:
+    - match: \$\{
+      scope: punctuation.definition.template.begin.v
+      push:
+        # TODO: Use a smaller subset of `Value`.
+        - include: Value
+        - match: \}
+          scope: punctuation.definition.template.end.v
+          pop: true
+    - match: (\$){{re_name_regular}}(\(\))
+      captures:
+        1: punctuation.definition.template.v
+        2: entity.name.function.v
+        3: punctuation.definition.params.v
+    - match: (\$){{re_name_regular}}
+      captures:
+        1: punctuation.definition.template.v
+        2: variable.other.v
 
   StringEscaped:
     - match: '{{re__escaped}}'
