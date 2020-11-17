@@ -49,16 +49,8 @@ contexts:
           pop: true
 
   Builtins:
-    - match: (?:{{re_builtin}}|{{re_name_regular}})\s*(\()
-      captures:
-        1: support.function.builtin.v
-        2: entity.name.function.v
-        3: punctuation.definition.params.begin.v
-      push:
-        - include: Value
-        - match: \)
-          scope: punctuation.definition.params.end.v
-          pop: true
+    - match: '{{re_builtin}}'
+      scope: support.function.builtin.v
     - match: \b(it|this|self)\b
       scope: variable.language.v
 
@@ -101,6 +93,18 @@ contexts:
       push:
         - include: Params
         - include: EOL
+
+  FunctionCall:
+    - match: (?:{{re_builtin}}|{{re_name_regular}})\s*(\()
+      captures:
+        1: support.function.builtin.v
+        2: entity.name.function.v
+        3: punctuation.definition.params.begin.v
+      push:
+        - include: Value
+        - match: \)
+          scope: punctuation.definition.params.end.v
+          pop: true
 
   Generics:
     - match: (<){{re_type_class}}(>)
@@ -281,8 +285,8 @@ contexts:
     - include: Comment
     - include: String
     - include: Keywords
-    - include: Params
     - include: Builtins
+    - include: Params
     - match: \b(true|false)\b
       scope: constant.language.boolean.v
     - match: \b(if|else|for|match|select|return|break|continue|defer)\b
@@ -295,6 +299,7 @@ contexts:
       scope: constant.other.v
     - include: Types
     - include: Operator
+    - include: FunctionCall
     - match: '{{re_name_regular}}'
       scope: variable.other.v
 
