@@ -24,8 +24,8 @@ variables:
 
 contexts:
   main:
-    - include: Import
     - include: Module
+    - include: Import
     - include: Attributes
     - include: Const
     - include: Struct
@@ -110,7 +110,7 @@ contexts:
 
   Import:
     - match: \b(import)\b
-      scope: keyword.declaration.import.v
+      scope: keyword.control.import.v
       push:
         - match: \b(as)\b
           scope: keyword.other.alias.v
