@@ -195,38 +195,38 @@ contexts:
           scope: punctuation.definition.params.end.v
           pop: true
 
-  String:
-    - include: StringQDouble
-    - include: StringQSingle
-    - include: StringLiteral
+  Rune:
+    - match: '`'
+      scope: punctuation.definition.rune.begin.v
+      push:
+      - meta_scope: constant.rune.v
+      - match: '`'
+        scope: punctuation.definition.rune.end.v
+        pop: true
 
-  StringQDouble:
+  String:
+    - include: StringDouble
+    - include: StringSingle
+    - include: Rune
+
+  StringDouble:
     - match: \"
-      scope: punctuation.string.double.begin.v
+      scope: punctuation.definition.string.begin.v
       push:
       - meta_scope: string.quoted.double.v
       - include: StringEscaped
       - match: \"
-        scope: punctuation.string.double.end.v
+        scope: punctuation.definition.string.end.v
         pop: true
 
-  StringQSingle:
+  StringSingle:
     - match: \'
-      scope: punctuation.string.single.begin.v
+      scope: punctuation.definition.string.begin.v
       push:
       - meta_scope: string.quoted.single.v
       - include: StringEscaped
       - match: \'
-        scope: punctuation.string.single.end.v
-        pop: true
-
-  StringLiteral:
-    - match: '`'
-      scope: punctuation.string.literal.begin.v
-      push:
-      - meta_scope: constant.character.v
-      - match: '`'
-        scope: punctuation.string.literal.end.v
+        scope: punctuation.definition.string.end.v
         pop: true
 
   StringEscaped:
