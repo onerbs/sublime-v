@@ -8,10 +8,6 @@ foldingStopMarker: '^\s*[\)\}]$'
 first_line_match: ^#!\S*/\bv\b
 
 variables:
-  re_question: \bQ:\s.*\?
-  re_todo: \b[a-zA-Z]+:\s.*$
-  re_url: \b(ht|f)tps?://(www.)?[A-Za-z]\S+
-
   re__escaped: \\([\\tvnrbfae''"]|x\h{2}|\d{,3})
   re__number: (?:(0b[01_]+)|(0o[0-7_]+)|(0x[\h_]+)|([\d_]+\.[\d_]+)|([\d_]+))
 
@@ -80,11 +76,9 @@ contexts:
         - include: EOL
 
   CommentTags:
-    - match: '{{re_question}}'
-      scope: comment.tag.question.v
-    - match: '{{re_todo}}'
+    - match: '\b[a-zA-Z]+:\s.*$'
       scope: comment.tag.todo.v
-    - match: '{{re_url}}'
+    - match: '\b(ht|f)tps?://(www.)?[A-Za-z]\S+'
       scope: comment.tag.url.v
 
   Const:
