@@ -196,28 +196,28 @@ contexts:
   Operator:
     - match: \b(in)\b
       scope: keyword.operator.access.v
-    - match: \|
-      scope: keyword.operator.sumtype.v
-    - match: \|\|
-      scope: keyword.operator.or.v
-    - match: \&\&
-      scope: keyword.operator.and.v
+    - match: \+\+
+      scope: keyword.operator.increment.v
+    - match: '--'
+      scope: keyword.operator.decrement.v
+    - match: ([\|&^+*/%-]=|(<<|>>)=)
+      scope: keyword.operator.assignment.v
+    - match: '[+*/%-]'
+      scope: keyword.operator.arithmetic.v
+    - match: '[~&^|]'
+      scope: keyword.operator.bitwise.v
+    - match: '(!=?|&&|\|\|)'
+      scope: keyword.operator.logical.v
+    - match: (<<|>>)
+      scope: keyword.operator.shift.v
     - match: \.\.
       scope: keyword.operator.range.v
     - match: <-
       scope: keyword.operator.arrow.v
-    - match: \!
-      scope: keyword.operator.not.v
-    - match: <<
-      scope: keyword.operator.append.v
-    - match: \:=?
-      scope: keyword.operator.assignment.v
-    - match: ([<>=!]=)|<|>|\b(is)\b
+    - match: ([<>=]=)|<|>|\b(is)\b
       scope: keyword.operator.comparison.v
-    - match: \=
+    - match: (:|:=|=)
       scope: keyword.operator.assignment.v
-    - match: '[\*\+%/-]'
-      scope: keyword.operator.arithmetic.v
 
   Params:
     - match: \(
