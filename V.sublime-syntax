@@ -109,6 +109,17 @@ contexts:
           scope: keyword.other.alias.v
         - match: '{{re_name_regular}}'
           scope: entity.name.module.v
+        - match: \{
+          scope: punctuation.definition.import-list.begin.v
+          push:
+            - include: Punctuation
+            - match: \b{{re_type_class}}\b
+              scope: storage.type.other.v
+            - match: '{{re_name_regular}}'
+              scope: entity.name.function.v
+            - match: \}
+              scope: punctuation.definition.import-list.end.v
+              pop: true
         - include: EOL
 
   Include:
