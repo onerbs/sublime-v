@@ -11,11 +11,11 @@ variables:
   re__escaped: \\([\\tvnrbfae''"]|x\h{2}|\d{,3})
   re__number: (?:(0b[01_]+)|(0o[0-7_]+)|(0x[\h_]+)|([\d_]+\.[\d_]+)|([\d_]+))
 
-  re_name_regular: \b([a-z][a-z_\d]*)\b
 
-  re_builtin: \b(exit|error|panic|e?print(?:ln)?|print_backtrace?)\b
+  re_builtin: (exit|error|panic|e?print(?:ln)?|print_backtrace?)
   re_type_numeric: (any_(?:int|float)|byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64)
   re_type_primitive: (any|bool|chan|rune|string|size_t|(?:byte|char|void)ptr)
+  re_name_regular: ([a-z][a-z\d_]*)
   re_type_class: ([A-Z][A-Za-z\d_]*)
 
 contexts:
@@ -31,7 +31,7 @@ contexts:
     - include: Block
 
   Attributes:
-    - match: \[\S+\]
+    - match: ^\[.+\]$
       scope: keyword.language.attribute.v
 
   Block:
@@ -107,7 +107,7 @@ contexts:
       push:
         - match: \b(as)\b
           scope: keyword.other.alias.v
-        - match: '{{re_name_regular}}'
+        - match: \b{{re_name_regular}}\b
           scope: entity.name.module.v
         - match: \{
           scope: punctuation.definition.import-list.begin.v
@@ -115,7 +115,7 @@ contexts:
             - include: Punctuation
             - match: \b{{re_type_class}}\b
               scope: storage.type.other.v
-            - match: '{{re_name_regular}}'
+            - match: \b{{re_name_regular}}\b
               scope: entity.name.function.v
             - match: \}
               scope: punctuation.definition.import-list.end.v
@@ -148,38 +148,42 @@ contexts:
       scope: keyword.language.unsafe.v
     - match: \b(or)\b
       scope: keyword.language.or.v
-    - match: \b(asm|atomic|embed|go(to)?|lock|none|rlock|shared|sizeof|static|typeof|union|unsafe)\b
+    - match: \b(asm|atomic|embed|go(to)?|r?lock|none|shared|sizeof|static|typeof|union|unsafe)\b
 
       # Builtin
       scope: keyword.language.v
-    - match: '{{re_builtin}}'
+    - match: \b{{re_builtin}}\b
       scope: support.function.builtin.v
     - match: \b(it|this|self)\b
       scope: variable.language.v
 
       # Constants
     - match: \b(err)\b
-      scope: constant.language.err.v
+      scope: constant.language.error.v
     - match: \b(true|false)\b
       scope: constant.language.boolean.v
+
+      # Control
     - match: \$(if|else|for)\b
       scope: keyword.control.flow.compile-time.v
     - match: \b(if|else|for|match|select|return|break|continue|defer)\b
       scope: keyword.control.flow.v
 
-      # Modifiers:
+      # Modifiers
     - match: \b(mut)\b
       scope: storage.modifier.mutable.v
     - match: \b(pub)\b
       scope: storage.modifier.public.v
-    - match: \b(__global)\b
-      scope: storage.modifier.global.v
+
+      # Hints
+    - match: '_(un)?likely_'
+      scope: support.function.hint.v
 
   Module:
     - match: \b(module)\b
       scope: keyword.declaration.namespace.v
       push:
-        - match: '{{re_name_regular}}'
+        - match: \b{{re_name_regular}}\b
           scope: entity.name.namespace.v
         - include: EOL
 
@@ -313,6 +317,10 @@ contexts:
       scope: storage.type.enum.v
     - match: \b(map)\b
       scope: storage.type.map.v
+    - match: \b(C)\b
+      scope: constant.language.v
+    - match: \b([A-Z]+)\b
+      scope: invalid.illegal.v
     - match: \b{{re_type_class}}\b
       scope: storage.type.other.v
     - include: Generics
@@ -321,7 +329,7 @@ contexts:
     - match: (\[])+
       scope: storage.modifier.array.v
     - match: \&
-      scope: storage.modifier.in-heap.v
+      scope: storage.modifier.reference.v
     - match: \?
       scope: storage.modifier.optional.v
     - match: \*+
@@ -330,18 +338,15 @@ contexts:
   Value:
     - include: Comment
     - include: String
+    - include: Types
     - include: Keywords
-    - include: Params
+    - include: Hints
     - include: Numbers
-    # - match: TODO
-    #   scope: invalid.illegal.v
-    - match: \b([A-Z]+)\b
-      scope: constant.other.v
+    - include: Params
     - include: Operator
     - include: Punctuation
     - include: FunctionCall
-    - include: Types
-    - match: '{{re_name_regular}}'
+    - match: \b{{re_name_regular}}\b
       scope: variable.other.v
 
   EOL:
