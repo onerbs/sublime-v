@@ -127,8 +127,6 @@ contexts:
   Keywords:
     - match: \b(assert)\b
       scope: keyword.language.assert.v
-    - match: \b(enum)\b
-      scope: storage.type.enum.v
     - match: \b(fn)\b
       scope: keyword.declaration.function.v
     - match: \b(interface)\b
@@ -300,6 +298,8 @@ contexts:
       scope: storage.type.numeric.v
     - match: \b{{re_type_primitive}}\b
       scope: storage.type.primitive.v
+    - match: \b(enum)\b
+      scope: storage.type.enum.v
     - match: \b(map)\b
       scope: storage.type.map.v
     - match: \b{{re_type_class}}\b
