@@ -303,7 +303,13 @@ contexts:
     - match: \b(struct)\b
       scope: keyword.declaration.struct.v
       push:
-        - include: Types
+          # StructType
+        - match: \b([A-Z]+)\b
+          scope: invalid.illegal.v
+        - match: \b{{re_type_class}}\b
+          scope: entity.name.struct.v
+        - match: \b(\S+)\b
+          scope: invalid.illegal.v
         - include: Block
         - include: EOL
 
