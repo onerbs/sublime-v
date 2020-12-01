@@ -1,7 +1,6 @@
 {
   "target": "vlang_builder",
   "selector": "source.v",
-  "file_patterns": ["*.v", "*.vsh"],
   "working_dir": "$file_path",
   "variants": [
     {
@@ -22,7 +21,7 @@
     },
     {
       "name": "Profile",
-      "shell_cmd": "v -profile ${file_base_name}.txt $file_name"
+      "shell_cmd": "v -profile $file_base_name.txt $file_name"
     },
   ]
 }
