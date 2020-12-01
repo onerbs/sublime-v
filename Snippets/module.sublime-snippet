@@ -3,6 +3,6 @@ module $1
 
 $0
 ]]></content>
-	<tabTrigger>module</tabTrigger>
+	<tabTrigger>mm</tabTrigger>
 	<scope>source.v</scope>
 </snippet>
