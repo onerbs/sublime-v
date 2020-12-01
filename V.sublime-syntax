@@ -11,7 +11,6 @@ variables:
   re__escaped: \\([\\tvnrbfae''"]|x\h{2}|\d{,3})
   re__number: (?:(0b[01_]+)|(0o[0-7_]+)|(0x[\h_]+)|([\d_]+\.[\d_]+)|([\d_]+))
 
-
   re_builtin: (exit|error|panic|e?print(?:ln)?|print_backtrace?)
   re_type_numeric: (any_(?:int|float)|byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64)
   re_type_primitive: (any|bool|chan|rune|string|size_t|(?:byte|char|void)ptr)
@@ -23,14 +22,16 @@ contexts:
     - include: Module
     - include: Import
     - include: Include
-    - include: Attributes
+    - include: Attribute
+
+    - include: Function
     - include: Const
     - include: Struct
 
     - include: Value
     - include: Block
 
-  Attributes:
+  Attribute:
     - match: ^\[.+\]$
       scope: keyword.language.attribute.v
 
@@ -53,7 +54,7 @@ contexts:
       scope: punctuation.definition.comment.begin.v
       push:
         - meta_scope: comment.block.v
-        - include: CommentTags
+        - include: CommentTag
         - include: CommentBlock
         - include: CommentLine
         - match: \*/
@@ -65,11 +66,11 @@ contexts:
       scope: punctuation.definition.comment.begin.v
       push:
         - meta_scope: comment.line.v
-        - include: CommentTags
+        - include: CommentTag
         - include: CommentBlock
         - include: EOL
 
-  CommentTags:
+  CommentTag:
     - match: '\b[a-zA-Z]+:\s.*$'
       scope: comment.tag.todo.v
     - match: '\b(ht|f)tps?://(www.)?[A-Za-z]\S+'
@@ -82,24 +83,18 @@ contexts:
         - include: Params
         - include: EOL
 
-  FunctionCall:
-    - match: (?:{{re_builtin}}|{{re_name_regular}})\s*(\()
-      captures:
-        1: support.function.builtin.v
-        2: entity.name.function.v
-        3: punctuation.definition.params.begin.v
+  Function:
+    - match: \b(fn)\b
+      scope: keyword.declaration.function.v
       push:
-        - include: Value
-        - match: \)
-          scope: punctuation.definition.params.end.v
-          pop: true
+        - include: Parameter
+        - include: Type
+        - match: '{{re_name_regular}}'
+          scope: entity.name.function.v
+        - include: Block
+        - include: EOL
 
-  Generics:
-    - match: (<){{re_type_class}}(>)
-      captures:
-        1: punctuation.definition.generic.begin.v
-        2: storage.type.generic.v
-        3: punctuation.definition.generic.end.v
+  # todo: SpecialFunction:
 
   Import:
     - match: \b(import)\b
@@ -135,11 +130,9 @@ contexts:
               pop: true
         - include: EOL
 
-  Keywords:
+  Keyword:
     - match: \b(assert)\b
       scope: keyword.language.assert.v
-    - match: \b(fn)\b
-      scope: keyword.declaration.function.v
     - match: \b(interface)\b
       scope: keyword.declaration.interface.v
     - match: \b(type)\b
@@ -149,13 +142,11 @@ contexts:
     - match: \b(or)\b
       scope: keyword.language.or.v
     - match: \b(asm|atomic|embed|go(to)?|r?lock|none|shared|sizeof|static|typeof|union|unsafe)\b
+      scope: keyword.language.v
 
       # Builtin
-      scope: keyword.language.v
     - match: \b{{re_builtin}}\b
       scope: support.function.builtin.v
-    - match: \b(it|this|self)\b
-      scope: variable.language.v
 
       # Constants
     - match: \b(err)\b
@@ -187,7 +178,7 @@ contexts:
           scope: entity.name.namespace.v
         - include: EOL
 
-  Numbers:
+  Number:
     - match: '{{re__number}}(\.\d+)*'
       captures:
         1: constant.numeric.binary.v
@@ -223,7 +214,7 @@ contexts:
     - match: (:|:=|=)
       scope: keyword.operator.assignment.v
 
-  Params:
+  Parameter:
     - match: \(
       scope: punctuation.definition.params.begin.v
       push:
@@ -313,26 +304,8 @@ contexts:
         - include: Block
         - include: EOL
 
-  Types:
-    - include: TypeModifier
-    - match: \b{{re_type_numeric}}\b
-      scope: storage.type.numeric.v
-    - match: \b{{re_type_primitive}}\b
-      scope: storage.type.primitive.v
-    - match: \b(enum)\b
-      scope: storage.type.enum.v
-    - match: \b(map)\b
-      scope: storage.type.map.v
-    - match: \b(C)\b
-      scope: constant.language.v
-    - match: \b([A-Z]+)\b
-      scope: invalid.illegal.v
-    - match: \b{{re_type_class}}\b
-      scope: storage.type.other.v
-    - include: Generics
-
   TypeModifier:
-    - match: (\[])+
+    - match: (\[\])+
       scope: storage.modifier.array.v
     - match: \&
       scope: storage.modifier.reference.v
@@ -341,17 +314,38 @@ contexts:
     - match: \*+
       scope: storage.modifier.pointer.v
 
+  Type:
+    - include: TypeModifier
+    - match: \b{{re_type_numeric}}\b
+      scope: storage.type.numeric.v
+    - match: \b{{re_type_primitive}}\b
+      scope: storage.type.primitive.v
+    # - match: \b(enum)\b
+    #   scope: storage.type.enum.v
+    # - match: \b(map)\b
+    #   scope: storage.type.map.v
+    - match: \b(C)\b
+      scope: constant.language.v
+    - match: \b([A-Z]+)\b
+      scope: invalid.illegal.v
+    - match: \b{{re_type_class}}\b
+      scope: storage.type.other.v
+    # - match: (<){{re_type_class}}(>)
+    #   captures:
+    #     1: punctuation.definition.generic.begin.v
+    #     2: storage.type.generic.v
+    #     3: punctuation.definition.generic.end.v
+
   Value:
     - include: Comment
     - include: String
-    - include: Types
-    - include: Keywords
-    - include: Hints
-    - include: Numbers
-    - include: Params
+    - include: Number
     - include: Operator
+
+    - include: Parameter
+    - include: Keyword
+    - include: Type
     - include: Punctuation
-    - include: FunctionCall
     - match: \b{{re_name_regular}}\b
       scope: variable.other.v
 
