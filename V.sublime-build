@@ -12,6 +12,14 @@
       "shell_cmd": "v -prod $file_name"
     },
     {
+      "name": "Compile project",
+      "shell_cmd": "v ."
+    },
+    {
+      "name": "Compile project (production)",
+      "shell_cmd": "v -prod ."
+    },
+    {
       "name": "Run compiled binary",
       "shell_cmd": "$file_base_name"
     },
