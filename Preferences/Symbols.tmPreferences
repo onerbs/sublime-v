@@ -4,7 +4,7 @@
 	<key>name</key>
 	<string>Symbol List</string>
 	<key>scope</key>
-	<string>source.v entity.name.namespace, source.v entity.name.struct, source.v entity.name.enum, source.v entity.name.function</string>
+	<string>source.v entity.name.namespace, source.v entity.name.class, source.v entity.name.function</string>
 	<key>settings</key>
 	<dict>
 		<key>showInIndexedSymbolList</key>
