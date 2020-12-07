@@ -1,8 +1,0 @@
-<snippet><content><![CDATA[
-fn main() {
-	$0
-}]]></content>
-	<tabTrigger>fm</tabTrigger>
-	<scope>source.v</scope>
-	<description>main function</description>
-</snippet>

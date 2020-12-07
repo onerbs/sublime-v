@@ -1,7 +1,5 @@
 <snippet><content><![CDATA[
-module $1
-
-$0
+module $0
 ]]></content>
 	<tabTrigger>mm</tabTrigger>
 	<scope>source.v</scope>
