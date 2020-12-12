@@ -212,7 +212,7 @@ contexts:
     - include: Keyword
     - include: Type
     - include: ParameterListBegin
-    - match: \s\.({{re_name_regular}})\s
+    - match: \s\.({{re_name_regular}})\b
       scope: constant.enum.v
     - match: \b({{re_name_regular}})\b
       scope: variable.other.v
