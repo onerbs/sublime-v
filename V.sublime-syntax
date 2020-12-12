@@ -146,6 +146,13 @@ contexts:
         2: punctuation.definition.params.begin.v
       push: ParameterListEnd
 
+    - match: '\s(\.)({{re_name_regular}})(\()'
+      captures:
+        1: punctuation.accessor.v
+        2: variable.function.v
+        3: punctuation.definition.params.begin.v
+      push: ParameterListEnd
+
     - match: '\b({{re_name_regular}})(\()'
       captures:
         1: variable.function.v
