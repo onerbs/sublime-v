@@ -11,5 +11,5 @@ trim_trailing_whitespace = true
 [*.py]
 indent_size = 4
 
-[*.sublime-snippet]
+[*.{md,sublime-snippet}]
 indent_style = tab
