@@ -12,20 +12,24 @@
       "shell_cmd": "v -prod $file_name"
     },
     {
-      "name": "Compile project",
-      "shell_cmd": "v ."
-    },
-    {
-      "name": "Compile project (production)",
-      "shell_cmd": "v -prod ."
+      "name": "Format file",
+      "shell_cmd": "v fmt -w $file_name"
     },
     {
       "name": "Run compiled binary",
       "shell_cmd": "$file_base_name"
     },
     {
-      "name": "Format file",
-      "shell_cmd": "v fmt -w $file_name"
+      "name": "Run project",
+      "shell_cmd": "v run ."
+    },
+    {
+      "name": "Compile project",
+      "shell_cmd": "v ."
+    },
+    {
+      "name": "Compile project (production)",
+      "shell_cmd": "v -prod ."
     },
     {
       "name": "Profile",
