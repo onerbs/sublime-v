@@ -10,8 +10,8 @@ first_line_match: ^#!\S*/\bv\b
 variables:
   re__escaped: \\([\\\$tvnrbfae''"]|x\h{2}|\d{,3})
 
-  re_attrib_known: 'deprecated|direct_array_access|if|inline|live|ref_only|trusted|typedef|unsafe|windows_stdcall'
-  re_builtin: 'exit|error|panic|e?print(?:ln)?|print_backtrace?'
+  re_attrib: 'deprecated|direct_array_access|if|inline|live|ref_only|trusted|typedef|unsafe|windows_stdcall'
+  re_builtin: 'exit|error|panic|e?print(?:ln)?|print_backtrace'
   re_type_numeric: 'any_(?:int|float)|byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64'
   re_type_primitive: 'any|bool|cha[rn]|rune|u?string|size_t|(?:byte|char|void)ptr'
   re_os: '(mac|macos|darwin|linux|windows|freebsd|openbsd|netbsd|dragonfly|android|solaris|haiku)'
@@ -35,7 +35,7 @@ contexts:
     - match: ^\[
       scope: punctuation.definition.attribute.begin.v
       push:
-        - match: \b({{re_attrib_known}})\b
+        - match: \b({{re_attrib}})\b
           scope: keyword.language.attribute.v
         - match: \]
           scope: punctuation.definition.attribute.end.v
@@ -225,7 +225,7 @@ contexts:
       scope: storage.type.primitive.v
     - match: \b(map)\b
       scope: storage.type.map.v
-    - match: \b(C)\b
+    - match: \b(C|DB)\b
       scope: constant.language.v
     - match: \b([A-Z])\b
       scope: storage.type.generic.v
@@ -299,7 +299,7 @@ contexts:
 
       # Control
     - match: \$(if|else|for)\b
-      scope: keyword.control.flow.compile-time.v
+      scope: keyword.control.flow.comptime.v
     - match: \b(if|else|for|match|select|return|break|continue|defer)\b
       scope: keyword.control.flow.v
 
