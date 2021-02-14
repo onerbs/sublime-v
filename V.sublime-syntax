@@ -9,7 +9,6 @@ first_line_match: ^#!\S*/\bv\b
 
 variables:
   re__escaped: \\([\\\$tvnrbfae''"]|x\h{2}|\d{,3})
-  re__number: (?:(0b[01_]+)|(0o[0-7_]+)|(0x[\h_]+)|([\d_]+\.[\d_]+)|([\d_]+))
 
   re_attrib_known: 'deprecated|direct_array_access|if|inline|live|ref_only|trusted|typedef|unsafe|windows_stdcall'
   re_builtin: 'exit|error|panic|e?print(?:ln)?|print_backtrace?'
@@ -453,14 +452,18 @@ contexts:
         pop: true
 
   Number:
-    - match: '{{re__number}}(\.\d+)*'
+    - match: \b(0b[01_]+)\b
+      scope: constant.numeric.binary.v
+    - match: \b(0o[0-7_]+)\b
+      scope: constant.numeric.octal.v
+    - match: \b(0x[\h_]+)\b
+      scope: constant.numeric.hexadecimal.v
+    - match: \b([\d_]+\.[\d_]+)(\.\d+)*\b
       captures:
-        1: constant.numeric.binary.v
-        2: constant.numeric.octal.v
-        3: constant.numeric.hexadecimal.v
-        4: constant.numeric.decimal.v
-        5: constant.numeric.v
-        6: invalid.illegal.v
+        1: constant.numeric.decimal.v
+        2: invalid.illegal.v
+    - match: \b([\d_]+)\b
+      scope: constant.numeric.v
 
   EOL:
     - match: $
