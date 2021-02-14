@@ -452,6 +452,8 @@ contexts:
         pop: true
 
   Number:
+    - match: \b([\d_]+(\.[\d_]+)?e[\+\-]?\d+)\b
+      scope: constant.numeric.scientific.v
     - match: \b(0b[01_]+)\b
       scope: constant.numeric.binary.v
     - match: \b(0o[0-7_]+)\b
