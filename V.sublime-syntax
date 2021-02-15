@@ -48,13 +48,13 @@ contexts:
       scope: variable.language.v
 
   ComptimeKeyword:
-    - match: '{{re_os}}'
+    - match: \b{{re_os}}\b
       scope: support.os.v
-    - match: '{{re_compiler}}'
+    - match: \b{{re_compiler}}\b
       scope: support.compiler.v
-    - match: '{{re_platform}}'
+    - match: \b{{re_platform}}\b
       scope: support.platform.v
-    - match: '{{re_other}}'
+    - match: \b{{re_other}}\b
       scope: support.other.v
 
   Directive:
