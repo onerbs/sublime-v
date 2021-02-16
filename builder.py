@@ -15,6 +15,11 @@ def get_binary_name(file):
     return '%s.exe' % base_name if is_windows else base_name
 
 
+def is_compiling(shell_cmd, file):
+    compile_commands = ['v %s' % file, 'v -prod %s' % file]
+    return shell_cmd in compile_commands
+
+
 class VlangBuilderCommand(sublime_plugin.WindowCommand):
     def run(self, **kwargs):
         shell_cmd = kwargs.get('shell_cmd')
@@ -26,7 +31,7 @@ class VlangBuilderCommand(sublime_plugin.WindowCommand):
         # please, no not work on /
         parent = path_parts[-2]
 
-        if parent == 'cmd' and shell_cmd == 'v %s' % file:
+        if parent == 'cmd' and is_compiling(shell_cmd, file):
             shell_cmd += ' -o %s' % get_bin_output(get_binary_name(file))
 
         if not shell_cmd:
