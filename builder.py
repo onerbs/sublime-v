@@ -29,8 +29,6 @@ class VlangBuilderCommand(sublime_plugin.WindowCommand):
         magic_dirs = settings.get('magic_dirs') or []
 
         file = path_parts[-1]
-
-        # please, no not work on /
         parent = path_parts[-2]
 
         if parent in magic_dirs and is_compiling(shell_cmd, file):
