@@ -1,0 +1,12 @@
+{
+  //
+  // When compiling a V file inside a magic dir,
+  // the binary output will be placed in the bin
+  // folder at the same level as the magic dir
+  //
+  // i.e.
+  //
+  // /full/path/magic/some.v -> /full/path/bin/some
+  //
+  "magic_dirs": []
+}
