@@ -25,13 +25,15 @@ class VlangBuilderCommand(sublime_plugin.WindowCommand):
         shell_cmd = kwargs.get('shell_cmd')
         file_name = self.window.active_view().file_name()
         path_parts = file_name.split(path_separator)
+        settings = sublime.load_settings('V.sublime-settings')
+        magic_dirs = settings.get('magic_dirs') or []
 
         file = path_parts[-1]
 
         # please, no not work on /
         parent = path_parts[-2]
 
-        if parent == 'cmd' and is_compiling(shell_cmd, file):
+        if parent in magic_dirs and is_compiling(shell_cmd, file):
             shell_cmd += ' -o %s' % get_bin_output(get_binary_name(file))
 
         if not shell_cmd:
