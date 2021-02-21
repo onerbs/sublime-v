@@ -1,0 +1,28 @@
+
+[
+	{
+		"id": "preferences",
+		"caption": "Preferences",
+		"children": [
+			{
+				"id": "package-settings",
+				"caption": "Package Settings",
+				"children": [
+					{
+						"id": "sublime-v",
+						"caption": "V",
+						"children": [
+							{
+								"command": "edit_settings",
+								"caption": "Settings",
+								"args": {
+									"base_file": "${packages}/V/V.sublime-settings"
+								},
+							}
+						]
+					}
+				],
+			}
+		],
+	}
+]
