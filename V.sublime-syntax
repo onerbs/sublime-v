@@ -35,8 +35,11 @@ contexts:
     - match: ^\[
       scope: punctuation.definition.attribute.begin.v
       push:
+        - include: String
         - match: \b({{re_attrib}})\b
           scope: keyword.language.attribute.v
+        - match: ':'
+          scope: punctuation.colon.v
         - match: \]
           scope: punctuation.definition.attribute.end.v
           pop: true
