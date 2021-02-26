@@ -28,7 +28,6 @@ contexts:
     - include: Directive
     - include: Import
 
-    - include: Const
     - include: Enum
     - include: Struct
     - include: Function
@@ -121,13 +120,6 @@ contexts:
         - include: EOL
 
   # Entity
-
-  Const:
-    - match: \b(const)\b
-      scope: keyword.declaration.constant.v
-      push:
-        - include: ParameterListBegin
-        - include: EOL
 
   Enum:
     - match: \b(enum)\b
@@ -280,6 +272,9 @@ contexts:
       scope: keyword.operator.access.v
     - match: \b(is)\b
       scope: keyword.operator.comparison.v
+
+    - match: \b(const)\b
+      scope: keyword.declaration.constant.v
 
     - match: \b(assert)\b
       scope: keyword.language.assert.v
