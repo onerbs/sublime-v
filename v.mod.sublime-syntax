@@ -1,34 +1,41 @@
 %YAML 1.2
 ---
 name: V Module
-scope: source.v.mod
+scope: source.vmod
 file_extensions:
   - v.mod
 contexts:
   main:
     - match: \b(Module)\b
-      scope: keyword.language.v
+      scope: keyword.language.vmod
+    - match: \{
+      scope: punctuation.definition.block.begin.vmod
       push:
-        - match: \{
-          push:
-            - meta_scope: meta.Module.v
-            - match: '[a-z]'
-              scope: keyword.other.v
-            - match: ':'
-              scope: keyword.operator.assign.v
-            - include: String
-            - match: \[
-              scope: punctuation.dependencies.begin.v
-              push:
-                - meta_scope: meta.Module.deps.v
-                - include: String
-                - match: \]
-                  scope: punctuation.dependencies.end.v
-                  pop: true
-            - match: \}
-              pop: true
-        - match: $
+        - meta_scope: meta.module.vmod
+        - match: '[a-z]'
+          scope: variable.other.vmod
+        - match: ':'
+          scope: keyword.operator.assignment.vmod
+        - include: Value
+        - include: Dependencies
+        - match: \}
+          scope: punctuation.definition.block.end.vmod
           pop: true
+
+  Dependencies:
+    - match: \[
+      scope: punctuation.dependencies.begin.vmod
+      push:
+        - meta_scope: meta.module.dependencies.vmod
+        - include: Value
+        - match: \]
+          scope: punctuation.dependencies.end.vmod
+          pop: true
+
+  Value:
+    - match: ','
+      scope: punctuation.separator.vmod
+    - include: String
 
   String:
     - include: StringDouble
@@ -36,18 +43,18 @@ contexts:
 
   StringDouble:
     - match: \"
-      scope: punctuation.string.double.begin.v
+      scope: punctuation.string.double.begin.vmod
       push:
-      - meta_scope: string.quoted.double.v
-      - match: \"
-        scope: punctuation.string.double.end.v
-        pop: true
+        - meta_scope: string.quoted.double.vmod
+        - match: \"
+          scope: punctuation.string.double.end.vmod
+          pop: true
 
   StringSingle:
     - match: \'
-      scope: punctuation.string.single.begin.v
+      scope: punctuation.string.single.begin.vmod
       push:
-      - meta_scope: string.quoted.single.v
-      - match: \'
-        scope: punctuation.string.single.end.v
-        pop: true
+        - meta_scope: string.quoted.single.vmod
+        - match: \'
+          scope: punctuation.string.single.end.vmod
+          pop: true
