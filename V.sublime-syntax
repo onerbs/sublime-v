@@ -240,6 +240,8 @@ contexts:
       push: ParameterListEnd
 
   ParameterListEnd:
+    - match: \b(fn)\b
+      scope: storage.type.function.v
     - include: Value
     - match: \)
       scope: punctuation.definition.params.end.v
