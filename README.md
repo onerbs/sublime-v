@@ -12,10 +12,8 @@
 	- `Compile`
 	- `Compile (production)`
 	- `Format file`
-	- `Run compiled binary` (without compile)
-	- `Run project`
-	- `Compile project`
-	- `Compile project (production)`
+	- `Format project`
+	- `Test project`
 	- `Profile`
 
 

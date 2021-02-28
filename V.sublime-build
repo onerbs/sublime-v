@@ -16,20 +16,12 @@
       "shell_cmd": "v fmt -w $file_name"
     },
     {
-      "name": "Run compiled binary",
-      "shell_cmd": "$file_base_name"
+      "name": "Format project",
+      "shell_cmd": "v fmt -w ."
     },
     {
-      "name": "Run project",
-      "shell_cmd": "v run ."
-    },
-    {
-      "name": "Compile project",
-      "shell_cmd": "v ."
-    },
-    {
-      "name": "Compile project (production)",
-      "shell_cmd": "v -prod ."
+      "name": "Test project",
+      "shell_cmd": "v test ."
     },
     {
       "name": "Profile",
