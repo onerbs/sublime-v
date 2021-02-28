@@ -5,7 +5,6 @@ scope: source.v
 file_extensions: [v, vsh]
 foldingStartMarker: '[\{\(]$'
 foldingStopMarker: '^\s*[\)\}]$'
-first_line_match: ^#!\S*/\bv\b
 
 variables:
   re__escaped: \\([\\\$tvnrbfae''"]|x\h{2}|\d{,3})
@@ -44,6 +43,12 @@ contexts:
           pop: true
 
     - include: Value
+
+    - match: '#!'
+      scope: punctuation.definition.comment.begin.v
+      push:
+        - meta_scope: comment.line.v
+        - include: EOL
 
   AtToken:
     - match: '{{re_at_token}}'
