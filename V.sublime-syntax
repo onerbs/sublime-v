@@ -2,7 +2,7 @@
 ---
 name: V
 scope: source.v
-file_extensions: [v, vsh]
+file_extensions: [v, vh, vv, vsh]
 foldingStartMarker: '[\{\(]$'
 foldingStopMarker: '^\s*[\)\}]$'
 
