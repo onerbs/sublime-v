@@ -130,8 +130,6 @@ contexts:
     - match: \b(enum)\b
       scope: keyword.declaration.enum.v
       push:
-        - match: \b([A-Z]+)\b
-          scope: invalid.illegal.v
         - match: \b({{re_type_class}})\b
           scope: entity.name.class.v
         - match: \b(\S+)\b
@@ -153,9 +151,11 @@ contexts:
     - match: \b(struct)\b
       scope: keyword.declaration.struct.v
       push:
-        - match: \b([A-Z]+)\b
-          scope: invalid.illegal.v
-        - match: \b(\S+)\b
+        - match: \b(C)\b
+          scope: constant.c-interop.v
+        - match: \.
+          scope: punctuation.accessor.v
+        - match: \b({{re_type_class}})\b
           scope: entity.name.class.v
         - include: Block
         - include: EOL
@@ -225,8 +225,8 @@ contexts:
       scope: storage.type.primitive.v
     - match: \b(map)\b
       scope: storage.type.map.v
-    - match: \b(C|DB)\b
-      scope: constant.language.v
+    - match: \b(C)\b
+      scope: constant.c-interop.v
     - match: \b([A-Z])\b
       scope: storage.type.generic.v
     - match: (<)([A-Z])(>)
@@ -234,8 +234,6 @@ contexts:
         1: punctuation.definition.generic.begin.v
         2: storage.type.generic.v
         3: punctuation.definition.generic.end.v
-    - match: \b([A-Z]{2,})\b
-      scope: invalid.illegal.v
     - match: \b({{re_type_class}})\b
       scope: storage.type.class.v
 
