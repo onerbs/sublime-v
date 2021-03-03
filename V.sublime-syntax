@@ -353,8 +353,15 @@ contexts:
       scope: storage.modifier.reference.v
     - match: \?
       scope: storage.modifier.optional.v
-    - match: \*+
-      scope: storage.modifier.pointer.v
+    - match: (\*)({{re_name_regular}})
+      captures:
+        1: storage.modifier.dereference.v
+        2: variable.other.v
+    - match: (\*)(\()
+      captures:
+        1: storage.modifier.dereference.v
+        2: punctuation.definition.params.begin.v
+      push: ParameterListEnd
 
   # Common
 
