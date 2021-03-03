@@ -245,6 +245,8 @@ contexts:
   ParameterListEnd:
     - match: \b(fn)\b
       scope: storage.type.function.v
+    - match: \.\.\.
+      scope: keyword.operator.varargs.v
     - include: Value
     - match: \)
       scope: punctuation.definition.params.end.v
@@ -327,7 +329,7 @@ contexts:
       scope: keyword.operator.logical.v
     - match: (<<|>>)
       scope: keyword.operator.shift.v
-    - match: \.\.
+    - match: \.\.\.?
       scope: keyword.operator.range.v
     - match: <-
       scope: keyword.operator.arrow.v
