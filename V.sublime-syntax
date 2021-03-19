@@ -435,20 +435,24 @@ contexts:
         - match: \}
           scope: punctuation.definition.template.end.v
           pop: true
-    # TODO: Improve
     - match: (\$)(err|it)\b
       captures:
         1: punctuation.definition.template.v
         2: constant.language.v
-    - match: (\$)({{re_name_regular}})(\(\))
-      captures:
-        1: punctuation.definition.template.v
-        2: variable.function.v
-        3: punctuation.definition.params.v
-    - match: (\$)({{re_name_regular}})
+    - match: (\$)(?:({{re_name_regular}})(\.))?({{re_name_regular}})(\()
       captures:
         1: punctuation.definition.template.v
         2: variable.other.v
+        3: punctuation.accessor.v
+        4: variable.function.v
+        5: punctuation.definition.params.v
+      push: ParameterListEnd
+    - match: (\$)(?:({{re_name_regular}})(\.))?({{re_name_regular}})
+      captures:
+        1: punctuation.definition.template.v
+        2: variable.other.v
+        3: punctuation.accessor.v
+        4: variable.other.v
 
   StringEscaped:
     - match: '{{re__escaped}}'
