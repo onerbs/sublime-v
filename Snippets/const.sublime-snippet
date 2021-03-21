@@ -1,7 +1,8 @@
 <snippet><content><![CDATA[
 const (
 	$0
-)]]></content>
+)
+]]></content>
 	<tabTrigger>cc</tabTrigger>
 	<scope>source.v</scope>
 </snippet>

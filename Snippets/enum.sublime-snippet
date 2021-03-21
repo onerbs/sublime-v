@@ -1,7 +1,8 @@
 <snippet><content><![CDATA[
-else {
+enum $1 {
 	$0
-}]]></content>
-	<tabTrigger>else</tabTrigger>
+}
+]]></content>
+	<tabTrigger>ee</tabTrigger>
 	<scope>source.v</scope>
 </snippet>

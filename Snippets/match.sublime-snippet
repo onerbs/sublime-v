@@ -4,6 +4,6 @@ match $1 {
 	else { $0 }
 }
 ]]></content>
-	<tabTrigger>match</tabTrigger>
+	<tabTrigger>mt</tabTrigger>
 	<scope>source.v</scope>
 </snippet>

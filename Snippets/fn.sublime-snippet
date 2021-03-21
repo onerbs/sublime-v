@@ -1,7 +1,8 @@
 <snippet><content><![CDATA[
 fn $1($2) $3 {
 	$0
-}]]></content>
+}
+]]></content>
 	<tabTrigger>fn</tabTrigger>
 	<scope>source.v</scope>
 </snippet>
