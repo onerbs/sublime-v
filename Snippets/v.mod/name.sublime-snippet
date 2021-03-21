@@ -1,6 +1,0 @@
-<snippet><content><![CDATA[
-name: '$1'$0
-]]></content>
-	<tabTrigger>nn</tabTrigger>
-	<scope>source.v.mod</scope>
-</snippet>
