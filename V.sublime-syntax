@@ -240,8 +240,6 @@ contexts:
       scope: storage.type.function.v
     - match: \.\.\.
       scope: keyword.operator.varargs.v
-    - match: \.({{re_name_regular}})
-      scope: constant.enum.v
     - include: Value
     - match: \)
       scope: punctuation.definition.params.end.v
