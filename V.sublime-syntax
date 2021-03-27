@@ -166,7 +166,7 @@ contexts:
         - include: Block
         - include: EOL
 
-  FunctionCall:
+  FnCall:
     - match: '\b(?:({{re_type_numeric}})|({{re_type_primitive}}))(\()'
       captures:
         1: storage.type.numeric.v
@@ -240,30 +240,30 @@ contexts:
       scope: storage.type.function.v
     - match: \.\.\.
       scope: keyword.operator.varargs.v
+    - match: \.({{re_name_regular}})
+      scope: constant.enum.v
     - include: Value
     - match: \)
       scope: punctuation.definition.params.end.v
       pop: true
 
   Value:
-    - include: Comment
-    - include: String
-    - include: Block
     - include: AtToken
+    - include: Block
+    - include: Comment
     - include: ComptimeKeyword
-    - match: \b(__[a-z_]+)\b
-      scope: support.v
-    - include: FunctionCall
     - include: Number
+    - include: String
+    - include: FnCall
     - include: Keyword
     - include: Type
+    - include: Operator
+    - include: Punctuation
     - include: ParameterListBegin
     - match: \s\.({{re_name_regular}})\b
       scope: constant.enum.v
     - match: \b({{re_name_regular}})\b
       scope: variable.other.v
-    - include: Operator
-    - include: Punctuation
 
   # Language
 
@@ -306,6 +306,10 @@ contexts:
       scope: storage.modifier.mutable.v
     - match: \b(pub)\b
       scope: storage.modifier.public.v
+
+      # Language
+    - match: \b(__[a-z_]+)\b
+      scope: support.v
 
   Keyword_Comptime:
     - match: \b{{re_os}}\b
