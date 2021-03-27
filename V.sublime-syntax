@@ -54,21 +54,11 @@ contexts:
     - match: '{{re_at_token}}'
       scope: variable.language.v
 
-  ComptimeKeyword:
-    - match: \b{{re_os}}\b
-      scope: support.os.v
-    - match: \b{{re_compiler}}\b
-      scope: support.compiler.v
-    - match: \b{{re_platform}}\b
-      scope: support.platform.v
-    - match: \b{{re_other}}\b
-      scope: support.other.v
-
   Directive:
     - match: \#(flag)\b
       scope: keyword.control.import.include.v
       push:
-        - include: ComptimeKeyword
+        - include: Keyword_Comptime
         # TODO: highlight -W
         - match: '(-l)(\w+)'
           captures:
@@ -316,6 +306,16 @@ contexts:
       scope: storage.modifier.mutable.v
     - match: \b(pub)\b
       scope: storage.modifier.public.v
+
+  Keyword_Comptime:
+    - match: \b{{re_os}}\b
+      scope: support.os.v
+    - match: \b{{re_compiler}}\b
+      scope: support.compiler.v
+    - match: \b{{re_platform}}\b
+      scope: support.platform.v
+    - match: \b{{re_other}}\b
+      scope: support.other.v
 
   Operator:
     - match: \+\+
