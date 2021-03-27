@@ -137,9 +137,12 @@ contexts:
         - match: \{
           scope: punctuation.definition.block.begin.v
           push:
+            - match: \=
+              scope: keyword.operator.assignment.v
             - match: \b{{re_name_regular}}\b
               scope: constant.enum.v
             - include: Comment
+            - include: Number
             - match: \b(\S+)\b
               scope: invalid.illegal.v
             - match: \}
