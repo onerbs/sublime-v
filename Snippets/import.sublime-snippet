@@ -1,6 +1,0 @@
-<snippet><content><![CDATA[
-import $0
-]]></content>
-	<tabTrigger>ii</tabTrigger>
-	<scope>source.v</scope>
-</snippet>

@@ -1,6 +1,0 @@
-<snippet><content><![CDATA[
-dependencies: [$0]
-]]></content>
-	<tabTrigger>dep</tabTrigger>
-	<scope>source.vmod</scope>
-</snippet>

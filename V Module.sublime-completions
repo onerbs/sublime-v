@@ -1,0 +1,17 @@
+{
+  "scope": "source.vmod",
+  "completions": [
+    { "trigger": "M", "contents": "Module {\n\t$0\n}" },
+    { "trigger": "n", "contents": "name: " },
+    { "trigger": "v", "contents": "version: 0.${0:1}.0" },
+    { "trigger": "ds", "contents": "description: " },
+    { "trigger": "dp", "contents": "dependencies: [$0]" },
+    { "trigger": "lic", "contents": "license: " },
+    { "trigger": "mit", "contents": "license: MIT" },
+    { "trigger": "ru", "contents": "repo_url: " },
+    { "trigger": "ht", "contents": "https://" },
+    { "trigger": "gh", "contents": "https://github.com/" },
+    { "trigger": "gl", "contents": "https://gitlab.com/" },
+    { "trigger": "au", "contents": "author: " },
+  ]
+}

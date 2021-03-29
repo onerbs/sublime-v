@@ -1,6 +1,0 @@
-<snippet><content><![CDATA[
-version: 0.${0:1}.0
-]]></content>
-	<tabTrigger>vv</tabTrigger>
-	<scope>source.vmod</scope>
-</snippet>

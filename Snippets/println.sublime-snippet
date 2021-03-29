@@ -1,6 +1,0 @@
-<snippet><content><![CDATA[
-println($0)
-]]></content>
-	<tabTrigger>pp</tabTrigger>
-	<scope>source.v</scope>
-</snippet>

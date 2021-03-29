@@ -1,8 +1,0 @@
-<snippet><content><![CDATA[
-struct $1 {
-	$0
-}
-]]></content>
-	<tabTrigger>ss</tabTrigger>
-	<scope>source.v</scope>
-</snippet>
