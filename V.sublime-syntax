@@ -464,13 +464,15 @@ contexts:
       scope: constant.character.escape.v
 
   Rune:
-    - match: '`'
+    - match: (`)
       scope: punctuation.definition.rune.begin.v
       push:
-      - meta_scope: constant.rune.v
-      - match: '`'
-        scope: punctuation.definition.rune.end.v
-        pop: true
+        - meta_scope: constant.rune.v
+        - match: (\\(\\|`))
+          scope: ''
+        - match: (`)
+          scope: punctuation.definition.rune.end.v
+          pop: true
 
   Number:
     - match: \b([\d_]+(\.[\d_]+)?e[\+\-]?\d+)\b
