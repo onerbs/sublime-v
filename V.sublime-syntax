@@ -138,7 +138,7 @@ contexts:
             - match: \=
               scope: keyword.operator.assignment.v
             - match: \b{{re_name_regular}}\b
-              scope: constant.enum.v
+              scope: constant.enum.root.v
             - include: Comment
             - include: Number
             - match: \b(\S+)\b
