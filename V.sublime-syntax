@@ -7,19 +7,18 @@ foldingStartMarker: '[\{\(]$'
 foldingStopMarker: '^\s*[\)\}]$'
 
 variables:
-  re__escaped: \\([\\\$tvnrbfae''"]|x\h{2}|\d{,3})
-
-  re_attrib: 'deprecated|direct_array_access|heap|if|inline|live|manualfree|ref_only|trusted|typedef|unsafe|windows_stdcall'
-  re_builtin: 'exit|error|panic|e?print(?:ln)?|print_backtrace'
-  re_type_numeric: 'any_(?:int|float)|byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64'
-  re_type_primitive: 'any|bool|cha[rn]|rune|u?string|size_t|(?:byte|char|void)ptr'
-  re_os: '(mac|macos|darwin|linux|windows|freebsd|openbsd|netbsd|dragonfly|android|solaris|haiku)'
-  re_compiler: '(gcc|tinyc|clang|mingw|msvc|cplusplus)'
-  re_platform: '(amd64|aarch64|x64|x32|little_endian|big_endian)'
-  re_other: '(debug|test|js|glibc|prealloc|no_bounds_checking)'
-  re_at_token: '@(?:FN|METHOD|MOD|STRUCT|VEXE|FILE|LINE|COLUMN|VHASH|VMOD_FILE|VROOT)'
+  re_attrib: (deprecated|direct_array_access|heap|if|inline|live|manualfree|ref_only|required|trusted|typedef|unsafe|windows_stdcall)
+  re_builtin: (exit|error|panic|e?print(?:ln)?|print_backtrace)
+  re_type_numeric: (any_(?:int|float)|byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64)
+  re_type_primitive: (any|bool|cha[rn]|rune|u?string|size_t|(?:byte|char|void)ptr)
+  re_name_class: '[A-Z][A-Za-z\d_]*'
   re_name_regular: '[a-z][a-z\d_]*'
-  re_type_class: '[A-Z][A-Za-z\d_]*'
+
+  re_ct_os: (android|bsd|darwin|dragonfly|freebsd|gnu|haiku|hpux|ios|linux|linux_or_macos|mach|macos|netbsd|openbsd|qnx|solaris|windows)
+  re_ct_compiler: (clang|cplusplus|gcc|mingw|msvc|tinyc)
+  re_ct_platform: (aarch64|amd64|(big|little)_endian|x32|x64)
+  re_ct_other: (debug|glibc|js|no_bounds_checking|prealloc|prod|test)
+  re_ct_token: (COLUMN|FILE|FN|LINE|METHOD|MOD|STRUCT|VEXE|VHASH|VMOD_FILE|VROOT)
 
 contexts:
   main:
@@ -34,7 +33,7 @@ contexts:
       scope: punctuation.definition.attribute.begin.v
       push:
         - include: String
-        - match: \b({{re_attrib}})\b
+        - match: \b{{re_attrib}}\b
           scope: keyword.language.attribute.v
         - match: (:)
           scope: punctuation.colon.v
@@ -50,8 +49,22 @@ contexts:
         - meta_scope: comment.line.v
         - include: EOL
 
-  AtToken:
-    - match: '{{re_at_token}}'
+  Value:
+    - include: Block
+    - include: Comment
+    - include: Number
+    - include: String
+    - include: FnCall
+    - include: Keyword
+    - include: Punctuation
+    - include: Operator
+    - include: Type
+    - include: ParameterListBegin
+    - match: \s\.({{re_name_regular}})\b
+      scope: constant.enum.v
+    - match: \b({{re_name_regular}})\b
+      scope: variable.other.v
+    - match: \@{{re_ct_token}}\b
       scope: variable.language.v
 
   Directive:
@@ -64,7 +77,7 @@ contexts:
           captures:
             1: constant.flag.include.v
             2: constant.included.lib.v
-        - match: '(-I)?(-L)?({{re_at_token}})?(\S+)?'
+        - match: '(-I)?(-L)?({{re_ct_token}})?(\S+)?'
           captures:
             1: constant.flag.include.v
             2: constant.flag.include_lib.v
@@ -105,7 +118,7 @@ contexts:
           scope: punctuation.definition.import-list.begin.v
           push:
             - include: Punctuation
-            - match: \b({{re_type_class}})\b
+            - match: \b({{re_name_class}})\b
               scope: constant.v
             - match: \b({{re_name_regular}})\b
               scope: constant.v
@@ -120,7 +133,7 @@ contexts:
     - match: \b(enum)\b
       scope: keyword.declaration.enum.v
       push:
-        - match: \b({{re_type_class}})\b
+        - match: \b({{re_name_class}})\b
           scope: entity.name.class.v
         - match: \b(\S+)\b
           scope: invalid.illegal.v
@@ -148,7 +161,7 @@ contexts:
           scope: constant.c-interop.v
         - match: \.
           scope: punctuation.accessor.v
-        - match: \b({{re_type_class}})\b
+        - match: \b({{re_name_class}})\b
           scope: entity.name.class.v
         - include: Block
         - include: EOL
@@ -167,14 +180,14 @@ contexts:
         - include: EOL
 
   FnCall:
-    - match: '\b(?:({{re_type_numeric}})|({{re_type_primitive}}))(\()'
+    - match: '\b(?:{{re_type_numeric}}|{{re_type_primitive}})(\()'
       captures:
         1: storage.type.numeric.v
         2: storage.type.primitive.v
         3: punctuation.definition.params.begin.v
       push: ParameterListEnd
 
-    - match: '\b({{re_builtin}})(\()'
+    - match: '\b{{re_builtin}}(\()'
       captures:
         1: support.function.builtin.v
         2: punctuation.definition.params.begin.v
@@ -212,9 +225,9 @@ contexts:
 
   Type:
     - include: TypeModifier
-    - match: \b({{re_type_numeric}})\b
+    - match: \b{{re_type_numeric}}\b
       scope: storage.type.numeric.v
-    - match: \b({{re_type_primitive}})\b
+    - match: \b{{re_type_primitive}}\b
       scope: storage.type.primitive.v
     - match: \b(map)\b
       scope: storage.type.map.v
@@ -227,7 +240,7 @@ contexts:
         1: punctuation.definition.generic.begin.v
         2: storage.type.generic.v
         3: punctuation.definition.generic.end.v
-    - match: \b({{re_type_class}})\b
+    - match: \b({{re_name_class}})\b
       scope: storage.type.class.v
 
   ParameterListBegin:
@@ -245,24 +258,6 @@ contexts:
       scope: punctuation.definition.params.end.v
       pop: true
 
-  Value:
-    - include: AtToken
-    - include: Block
-    - include: Comment
-    - include: ComptimeKeyword
-    - include: Number
-    - include: String
-    - include: FnCall
-    - include: Keyword
-    - include: Type
-    - include: Operator
-    - include: Punctuation
-    - include: ParameterListBegin
-    - match: \s\.({{re_name_regular}})\b
-      scope: constant.enum.v
-    - match: \b({{re_name_regular}})\b
-      scope: variable.other.v
-
   # Language
 
   Keyword:
@@ -273,18 +268,15 @@ contexts:
 
     - match: \b(const)\b
       scope: keyword.declaration.constant.v
-
-    - match: \b(assert)\b
-      scope: keyword.language.assert.v
     - match: \b(interface)\b
       scope: keyword.declaration.interface.v
     - match: \b(type)\b
       scope: keyword.declaration.type_alias.v
-    - match: \b(or)\b
-      scope: keyword.language.or.v
-    - match: \b(unsafe)\b
-      scope: keyword.language.unsafe.v
-    - match: \b(asm|atomic|embed|go(to)?|r?lock|shared|sizeof|static|typeof|union)\b
+
+    - match: \b(if|else|for|match|select|return|break|continue|defer)\b
+      scope: keyword.control.flow.v
+
+    - match: \b(asm|assert|atomic|embed|go(to)?|or|r?lock|shared|sizeof|static|typeof|union|unsafe)\b
       scope: keyword.language.v
 
       # Constants
@@ -292,12 +284,6 @@ contexts:
       scope: constant.language.v
     - match: \b(true|false)\b
       scope: constant.language.boolean.v
-
-      # Control
-    - match: \$(if|else|for)\b
-      scope: keyword.control.flow.comptime.v
-    - match: \b(if|else|for|match|select|return|break|continue|defer)\b
-      scope: keyword.control.flow.v
 
       # Modifiers
     - match: \b(mut)\b
@@ -309,14 +295,22 @@ contexts:
     - match: \b(__[a-z_]+)\b
       scope: support.v
 
+      # Compile-time
+    - match: \$(if|else|for)\b
+      scope: keyword.control.flow.comptime.v
+    - match: \$(embed_file|env|html|tmpl)\b
+      scope: variable.other.comptime.v
+    - match: \$(\S+)\b
+      scope: invalid.illegal.v
+
   Keyword_Comptime:
-    - match: \b{{re_os}}\b
+    - match: \b{{re_ct_os}}\b
       scope: support.os.v
-    - match: \b{{re_compiler}}\b
+    - match: \b{{re_ct_compiler}}\b
       scope: support.compiler.v
-    - match: \b{{re_platform}}\b
+    - match: \b{{re_ct_platform}}\b
       scope: support.platform.v
-    - match: \b{{re_other}}\b
+    - match: \b{{re_ct_other}}\b
       scope: support.other.v
 
   Operator:
@@ -396,11 +390,13 @@ contexts:
         - include: EOL
 
   CommentTag:
-    - match: '\b(TODO|todo):\s.*$'
+    - match: \b(Q)\b.*\?
+      scope: comment.tag.question.v
+    - match: \b(TODO|todo)\b.*$
       scope: comment.tag.todo.v
-    - match: '\b(FIXME|fixme):\s.*$'
+    - match: \b(FIXME|fixme)\b.*$
       scope: comment.tag.fixme.v
-    - match: '\b(ht|f)tps?://(www.)?[A-Za-z]\S+'
+    - match: \b([a-z]+)://\S+\b
       scope: comment.tag.url.v
 
   String:
@@ -413,7 +409,7 @@ contexts:
       scope: punctuation.definition.string.begin.v
       push:
       - meta_scope: string.quoted.double.v
-      - include: StringIncludes
+      - include: StringCommon
       - match: \"
         scope: punctuation.definition.string.end.v
         pop: true
@@ -423,16 +419,16 @@ contexts:
       scope: punctuation.definition.string.begin.v
       push:
       - meta_scope: string.quoted.single.v
-      - include: StringIncludes
+      - include: StringCommon
       - match: \'
         scope: punctuation.definition.string.end.v
         pop: true
 
-  StringIncludes:
-    - include: StringInterpolation
-    - include: StringEscaped
+  StringCommon:
+    - match: \\([\\\$"abtnvfre'']|x\h{,2}|[0-7]{,3})
+      scope: constant.character.escape.v
 
-  StringInterpolation:
+      # String interpolation
     - match: \$\{
       scope: punctuation.definition.template.begin.v
       push:
@@ -458,10 +454,6 @@ contexts:
         2: variable.other.v
         3: punctuation.accessor.v
         4: variable.other.v
-
-  StringEscaped:
-    - match: '{{re__escaped}}'
-      scope: constant.character.escape.v
 
   Rune:
     - match: (`)
