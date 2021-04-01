@@ -72,17 +72,12 @@ contexts:
       scope: keyword.control.import.include.v
       push:
         - include: Keyword_Comptime
-        # TODO: highlight -W
-        - match: '(-l)(\w+)'
-          captures:
-            1: constant.flag.include.v
-            2: constant.included.lib.v
-        - match: '(-I)?(-L)?({{re_ct_token}})?(\S+)?'
-          captures:
-            1: constant.flag.include.v
-            2: constant.flag.include_lib.v
-            3: variable.language.v
-            4: constant.included.path.v
+        - match: \@{{re_ct_token}}
+          scope: variable.language.v
+        - match: (-[ILlW])
+          scope: constant.flag.v
+        - match: (\w+|/)
+          scope: constant.included.path.v
         - include: EOL
     - match: \#(include)\b
       scope: keyword.control.import.include.v
