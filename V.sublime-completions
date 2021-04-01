@@ -1,20 +1,27 @@
 {
   "scope": "source.v",
   "completions": [
+
+    "assert",
+    "break",
+    "continue",
+
     { "trigger": "mm", "contents": "module " },
     { "trigger": "ii", "contents": "import " },
-    { "trigger": "ss", "contents": "struct $1 {\n\t$0\n}" },
-    { "trigger": "co", "contents": "const $1 (\n\t$2 = $0\n)" },
-    { "trigger": "cn", "contents": "const $1 = $0" },
+
+    { "trigger": "cc", "contents": "const $1 = $0" },
+    { "trigger": "ct", "contents": "const (\n\t$1 = $0\n)" },
     { "trigger": "ee", "contents": "enum $1 {\n\t$0\n}" },
-    { "trigger": "bb", "contents": "break" },
-    { "trigger": "cc", "contents": "continue" },
+    { "trigger": "mt", "contents": "match $1 {\n\t$2 {$0}\n\telse {}\n}" },
+    { "trigger": "ss", "contents": "struct $1 {\n\t$0\n}" },
+
+    { "trigger": "fn", "contents": "// $1 $2\nfn $1($3) ?$4 {\n\t$0\n}" },
+    { "trigger": "pfn", "contents": "// $1 $2\npub fn $1($3) ?$4 {\n\t$0\n}" },
+    { "trigger": "fnt", "contents": "fn test_$1() {\n\t$0\n}" },
+
     { "trigger": "rr", "contents": "return " },
     { "trigger": "pp", "contents": "println($0)" },
     { "trigger": "ppp", "contents": "eprintln($0)" },
 
-    { "trigger": "fn", "contents": "// $1 $2\nfn $1($3) $4 {\n\t$0\n}" },
-    { "trigger": "pfn", "contents": "// $1 $2\npub fn $1($3) $4 {\n\t$0\n}" },
-    { "trigger": "mt", "contents": "match $1 {\n\t$2 {$0}\n\telse {}\n}" },
   ]
 }
