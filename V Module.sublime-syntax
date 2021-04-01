@@ -11,50 +11,29 @@ contexts:
     - match: \{
       scope: punctuation.definition.block.begin.vmod
       push:
-        - meta_scope: meta.module.vmod
-        - match: '[a-z]'
+        - match: \b(author|dep(endencie)?s|description|license|name|repo_url|version)\b
+          scope: keyword.language.vmod
+        - match: \b(\w+)\b
           scope: variable.other.vmod
-        - match: ':'
-          scope: keyword.operator.assignment.vmod
-        - include: Value
-        - include: Dependencies
+        - match: (:)
+          scope: punctuation.colon.vmod
+          push:
+            - match: \[
+              scope: punctuation.list.begin.vmod
+              push:
+                - match: (,)
+                  scope: punctuation.separator.vmod
+                - match: \b(\w+|\.)\b
+                  scope: constant.package.vmod
+                - match: \]
+                  scope: punctuation.list.end.vmod
+                  pop: true
+            - match: \b([a-z]+://\S+)\b
+              scope: constant.url.vmod
+            - match: (\S+)
+              scope: string.unquoted.vmod
+            - match: $
+              pop: true
         - match: \}
           scope: punctuation.definition.block.end.vmod
-          pop: true
-
-  Dependencies:
-    - match: \[
-      scope: punctuation.dependencies.begin.vmod
-      push:
-        - meta_scope: meta.module.dependencies.vmod
-        - include: Value
-        - match: \]
-          scope: punctuation.dependencies.end.vmod
-          pop: true
-
-  Value:
-    - match: ','
-      scope: punctuation.separator.vmod
-    - include: String
-
-  String:
-    - include: StringDouble
-    - include: StringSingle
-
-  StringDouble:
-    - match: \"
-      scope: punctuation.string.double.begin.vmod
-      push:
-        - meta_scope: string.quoted.double.vmod
-        - match: \"
-          scope: punctuation.string.double.end.vmod
-          pop: true
-
-  StringSingle:
-    - match: \'
-      scope: punctuation.string.single.begin.vmod
-      push:
-        - meta_scope: string.quoted.single.vmod
-        - match: \'
-          scope: punctuation.string.single.end.vmod
           pop: true
