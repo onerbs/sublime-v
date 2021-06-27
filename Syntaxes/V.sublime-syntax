@@ -7,17 +7,17 @@ foldingStartMarker: '[\{\(]$'
 foldingStopMarker: '^\s*[\)\}]$'
 
 variables:
-  re_attrib: (deprecated|direct_array_access|heap|if|inline|live|manualfree|ref_only|required|trusted|typedef|unsafe|windows_stdcall)
-  re_builtin: (exit|error|panic|e?print(?:ln)?|print_backtrace)
-  re_type_numeric: (any_(?:int|float)|byte|u16|u32|u64|u128|int|i16|i64|i128|i8|f32|f64)
-  re_type_primitive: (any|bool|cha[rn]|rune|u?string|size_t|(?:byte|char|void)ptr)
+  re_attrib: (console|deprecated|direct_array_access|heap|if|inline|keep_args_alive|live|manualfree|ref_only|trusted|typedef|unsafe|windows_stdcall)
+  re_builtin: (exit|error|isnil|panic|e?print(?:ln)?|print_backtrace)
+  re_type_numeric: (byte|u16|u32|u64|u128|i8|i16|int|i64|i128|f32|f64)
+  re_type_primitive: (any|bool|cha[rn]|rune|u?string|size_t|voidptr)
   re_name_class: '[A-Z][A-Za-z\d_]*'
   re_name_regular: '[a-z][a-z\d_]*'
 
   re_ct_os: (android|bsd|darwin|dragonfly|freebsd|gnu|haiku|hpux|ios|linux|linux_or_macos|mach|macos|netbsd|openbsd|qnx|solaris|windows)
-  re_ct_compiler: (clang|cplusplus|gcc|mingw|msvc|tinyc)
-  re_ct_platform: (aarch64|amd64|(big|little)_endian|x32|x64)
-  re_ct_other: (debug|glibc|js|no_bounds_checking|prealloc|prod|test)
+  # re_ct_compiler: (clang|cplusplus|gcc|mingw|msvc|tinyc)
+  # re_ct_platform: (aarch64|amd64|(big|little)_endian|x32|x64)
+  # re_ct_other: (debug|glibc|js|no_bounds_checking|prealloc|prod|test)
   re_ct_token: (COLUMN|FILE|FN|LINE|METHOD|MOD|STRUCT|VEXE|VHASH|VMOD_FILE|VROOT)
 
 contexts:
@@ -35,8 +35,8 @@ contexts:
         - include: String
         - match: \b{{re_attrib}}\b
           scope: keyword.language.attribute.v
-        - match: (:)
-          scope: punctuation.colon.v
+        - match: '[:;]'
+          scope: punctuation.v
         - match: \]
           scope: punctuation.definition.attribute.end.v
           pop: true
@@ -60,6 +60,11 @@ contexts:
     - include: Operator
     - include: Type
     - include: ParameterListBegin
+    # - match: \b({{re_name_regular}})(\.)({{re_name_regular}})\b
+    #   captures:
+    #     1: variable.other.v
+    #     2: punctuation.accessor.v
+    #     3: variable.other.property.v
     - match: \s\.({{re_name_regular}})\b
       scope: constant.enum.v
     - match: \b({{re_name_regular}})\b
@@ -71,10 +76,11 @@ contexts:
     - match: \#(flag)\b
       scope: keyword.control.import.include.v
       push:
-        - include: Keyword_Comptime
+        - match: \b{{re_ct_os}}\b
+          scope: support.target.v
         - match: \@{{re_ct_token}}
           scope: variable.language.v
-        - match: (-[ILlW])
+        - match: (-[IlLD])
           scope: constant.flag.v
         - match: (\w+|/)
           scope: constant.included.path.v
@@ -82,6 +88,7 @@ contexts:
     - match: \#(include)\b
       scope: keyword.control.import.include.v
       push:
+        - include: Comment
         - match: '<|\"'
           scope: punctuation.definition.string.begin.v
           push:
@@ -286,27 +293,35 @@ contexts:
     - match: \b(pub)\b
       scope: storage.modifier.public.v
 
+      # Built in
+    - match: '\b{{re_builtin}}\b'
+      scope: support.function.builtin.v
+
       # Language
+    - match: \b(ary|cfg|ctx|self)\b
+      scope: constant.language.v
+    - match: \b(arr|this)\b
+      scope: invalid.illegal.v
     - match: \b(__[a-z_]+)\b
       scope: support.v
 
       # Compile-time
     - match: \$(if|else|for)\b
       scope: keyword.control.flow.comptime.v
-    - match: \$(embed_file|env|html|tmpl)\b
-      scope: variable.other.comptime.v
+    - match: \$(embed_file|env|html|tmpl|vweb\.html)\b
+      scope: variable.function.comptime.v
     - match: \$(\S+)\b
       scope: invalid.illegal.v
 
-  Keyword_Comptime:
-    - match: \b{{re_ct_os}}\b
-      scope: support.os.v
-    - match: \b{{re_ct_compiler}}\b
-      scope: support.compiler.v
-    - match: \b{{re_ct_platform}}\b
-      scope: support.platform.v
-    - match: \b{{re_ct_other}}\b
-      scope: support.other.v
+  # KeywordComptime:
+  #   - match: \b{{re_ct_os}}\b
+  #     scope: support.os.v
+  #   - match: \b{{re_ct_compiler}}\b
+  #     scope: support.compiler.v
+  #   - match: \b{{re_ct_platform}}\b
+  #     scope: support.platform.v
+  #   - match: \b{{re_ct_other}}\b
+  #     scope: support.other.v
 
   Operator:
     - match: (\+\+)
