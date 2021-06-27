@@ -2,8 +2,8 @@
 ---
 name: V Module
 scope: source.vmod
-file_extensions:
-  - v.mod
+file_extensions: [v.mod]
+
 contexts:
   main:
     - match: \b(Module)\b
@@ -11,7 +11,7 @@ contexts:
     - match: \{
       scope: punctuation.definition.block.begin.vmod
       push:
-        - match: \b(author|dep(endencie)?s|description|license|name|repo_url|version)\b
+        - match: \b(author|dependencies|description|license|name|repo_url|version)\b
           scope: keyword.language.vmod
         - match: \b(\w+)\b
           scope: variable.other.vmod
