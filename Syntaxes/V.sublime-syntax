@@ -296,12 +296,6 @@ contexts:
       # Built in
     - match: '\b{{re_builtin}}\b'
       scope: support.function.builtin.v
-
-      # Language
-    - match: \b(ary|cfg|ctx|self)\b
-      scope: constant.language.v
-    - match: \b(arr|this)\b
-      scope: invalid.illegal.v
     - match: \b(__[a-z_]+)\b
       scope: support.v
 
