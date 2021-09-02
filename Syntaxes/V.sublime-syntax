@@ -8,7 +8,7 @@ foldingStopMarker: '^\s*[\)\}]$'
 
 variables:
   re_attrib: (console|deprecated|direct_array_access|heap|if|inline|keep_args_alive|live|manualfree|ref_only|trusted|typedef|unsafe|windows_stdcall)
-  re_builtin: (exit|error|isnil|panic|e?print(?:ln)?|print_backtrace)
+  re_builtin: (dump|exit|error|isnil|panic|e?print(?:ln)?|print_backtrace)
   re_type_numeric: (byte|u16|u32|u64|u128|i8|i16|int|i64|i128|f32|f64)
   re_type_primitive: (any|bool|cha[rn]|rune|u?string|size_t|voidptr)
   re_name_class: '[A-Z][A-Za-z\d_]*'
