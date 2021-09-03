@@ -406,6 +406,8 @@ contexts:
   String:
     - include: StringDouble
     - include: StringSingle
+    - include: RawStringDouble
+    - include: RawStringSingle
     - include: Rune
 
   StringDouble:
@@ -424,6 +426,28 @@ contexts:
       push:
       - meta_scope: string.quoted.single.v
       - include: StringCommon
+      - match: \'
+        scope: punctuation.definition.string.end.v
+        pop: true
+
+  RawStringDouble:
+    - match: (r)(\")
+      captures:
+        1: storage.type.raw_string.v
+        2: punctuation.definition.string.begin.v
+      push:
+      - meta_scope: string.quoted.double.v
+      - match: \"
+        scope: punctuation.definition.string.end.v
+        pop: true
+
+  RawStringSingle:
+    - match: (r)(\')
+      captures:
+        1: storage.type.raw_string.v
+        2: punctuation.definition.string.begin.v
+      push:
+      - meta_scope: string.quoted.single.v
       - match: \'
         scope: punctuation.definition.string.end.v
         pop: true
