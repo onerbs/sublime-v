@@ -1,0 +1,33 @@
+{
+  "scope": "source.v",
+  "completions": [
+
+    { "trigger": "mm", "contents": "module ", "kind": "keyword" },
+    { "trigger": "ii", "contents": "import ", "kind": "keyword" },
+    { "trigger": "mmm", "contents": "module main" },
+
+    { "trigger": "cc", "contents": "const $1 = $0" },
+    { "trigger": "ct", "contents": "const (\n\t$1 = $0\n)" },
+    { "trigger": "ee", "contents": "enum $1 {\n\t$0\n}" },
+    { "trigger": "mt", "contents": "match $1 {\n\t$2 {$0}\n\telse {}\n}" },
+    { "trigger": "ss", "contents": "struct $1 {\n\t$0\n}" },
+    { "trigger": "tt", "contents": "interface $1 {\n\t$0\n}" },
+
+    { "trigger": "fn", "contents": "// $1 $4\nfn $1($2) ?$3 {\n\t$0\n}" },
+    { "trigger": "pfn", "contents": "// $1 $4\npub fn $1($2) ?$3 {\n\t$0\n}" },
+    { "trigger": "fnt", "contents": "fn test_$1() {\n\t$0\n}" },
+
+    { "trigger": "at", "contents": "assert ", "kind": "keyword" },
+    { "trigger": "bk", "contents": "break", "kind": "keyword" },
+    { "trigger": "ct", "contents": "continue", "kind": "keyword" },
+    { "trigger": "rr", "contents": "return ", "kind": "keyword" },
+    { "trigger": "rrt", "contents": "return true" },
+    { "trigger": "rrf", "contents": "return false" },
+    { "trigger": "rrn", "contents": "return none" },
+
+    { "trigger": "dd", "contents": "dump($0)" },
+    { "trigger": "pp", "contents": "println($0)", "kind": "function" },
+    { "trigger": "epp", "contents": "eprintln($0)", "kind": "function" },
+
+  ]
+}
