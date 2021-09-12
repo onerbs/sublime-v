@@ -1,6 +1,6 @@
 # Sublime V
 
-> Sublime Text 3 support for [The V Programming Language](https://vlang.io)
+Sublime Text support for [The V Programming Language](https://vlang.io)
 
 
 ## Features
@@ -36,8 +36,6 @@ When you compile `some.v`, you will end up with the resulting tree:
 	bin/
 	 └─ some
 
-> You may have to create the `bin` folder manually
-
 
 Edit the list as you prefer under:
 
@@ -46,14 +44,9 @@ Edit the list as you prefer under:
 
 ## Installation
 
-	# Windows
-	git clone https://github.com/onerbs/sublime-v ^
-		"%AppData%\Sublime Text 3\Packages\V"
+Navigate into the Sublime Text `Packages` directory and clone the repository:
 
-	# Linux
-	git clone https://github.com/onerbs/sublime-v \
-		"~/.config/sublime-text-3/Packages/V"
+	git clone https://github.com/onerbs/sublime-v V
 
-	# macOS
-	git clone https://github.com/onerbs/sublime-v \
-		"~/Library/Application Support/Sublime Text 3/Packages/V"
+
+> Open the packages folder using `Preferences: Browse Packages` from the command palette.
