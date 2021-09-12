@@ -5,10 +5,14 @@
   <string>Symbol List</string>
   <key>scope</key>
   <string>
-    source.v constant.enum.root,
-    source.v entity.name.class,
+    source.v entity.name.namespace,
+    source.v entity.name.type,
+    source.v entity.name.struct,
+    source.v entity.name.interface,
+    source.v entity.name.enum,
+    source.v entity.name.constant,
     source.v entity.name.function,
-    source.v entity.name.namespace
+    source.v constant.enum.root
   </string>
   <key>settings</key>
   <dict>
