@@ -2,6 +2,8 @@
   "scope": "source.v",
   "completions": [
 
+    "assert", "break", "continue", "defer", "unsafe",
+
     { "trigger": "mm", "contents": "module ", "kind": "keyword" },
     { "trigger": "ii", "contents": "import ", "kind": "keyword" },
     { "trigger": "mmm", "contents": "module main" },

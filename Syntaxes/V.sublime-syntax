@@ -488,7 +488,7 @@ contexts:
       scope: punctuation.definition.rune.begin.v
       push:
         - meta_scope: constant.rune.v
-        - match: (\\(\\|`))
+        - match: (\\[\\`])
           scope: ''
         - match: (`)
           scope: punctuation.definition.rune.end.v
