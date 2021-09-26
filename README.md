@@ -11,9 +11,12 @@ Sublime Text support for [The V Programming Language](https://vlang.io)
 	- `Test` (default action for `*_test.v` files)
 	- `Compile`
 	- `Compile (production)`
+	- `Compile (skip unused)`
+	- `Test project`
 	- `Format file`
 	- `Format project`
-	- `Test project`
+	- `Vet file`
+	- `Vet project`
 	- `Profile`
 
 

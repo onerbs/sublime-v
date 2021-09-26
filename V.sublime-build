@@ -6,27 +6,47 @@
   "variants": [
     {
       "name": "Compile",
-      "shell_cmd": "v $file_name"
+      "action": ""
     },
     {
       "name": "Compile (production)",
-      "shell_cmd": "v -prod $file_name"
+      "action": "",
+      "flags": ["-prod"]
     },
     {
-      "name": "Format file",
-      "shell_cmd": "v fmt -w $file_name"
-    },
-    {
-      "name": "Format project",
-      "shell_cmd": "v fmt -w ."
+      "name": "Compile (skip unused)",
+      "action": "",
+      "flags": ["-prod", "-skip-unused"]
     },
     {
       "name": "Test project",
-      "shell_cmd": "v test ."
+      "action": "test",
+      "project": true
+    },
+    {
+      "name": "Format file",
+      "action": "fmt",
+      "flags": ["-w"]
+    },
+    {
+      "name": "Format project",
+      "action": "fmt",
+      "flags": ["-w"],
+      "project": true
+    },
+    {
+      "name": "Vet file",
+      "action": "vet"
+    },
+    {
+      "name": "Vet project",
+      "action": "vet",
+      "project": true
     },
     {
       "name": "Profile",
-      "shell_cmd": "v -profile $file_base_name.txt $file_name"
+      "action": "",
+      "flags": ["-profile", "$file_base_name.txt"]
     },
   ]
 }
