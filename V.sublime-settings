@@ -1,12 +1,56 @@
 {
-  //
-  // When compiling a V file inside a magic dir,
-  // the binary output will be placed in the bin
-  // folder at the same level as the magic dir
-  //
-  // i.e.
-  //
-  // /full/path/magic/some.v -> /full/path/bin/some
-  //
-  "magic_dirs": []
+  /*
+   * When compiling a V file inside a magic dir,
+   * the binary output will be placed in the `bin`
+   * directory at the same level as the magic dir.
+   *
+   * @example
+   *   Having `"cmd"` in the list,
+   *
+   *     compile: /some/project/cmd/some.v
+   *     command: v -o ../bin/some some.v
+   *     produce: /some/project/bin/some
+   *
+   */
+  "magic_dirs": [],
+
+  /*
+   * Apply different compilation context based on
+   * the current directory, file extension or both.
+   *
+   *   This does not conflicts with `magic_dirs`.
+   *
+   * @example
+   *   Ensure you compile `**\win\*.v` files only for Windows.
+   *
+   *   {
+   *     "directories": ["win"],
+   *     "platform": ["windows"],
+   *   }
+   *
+   *
+   * @example
+   *   Ensure you do not compile `*.nix.v` files on Windows.
+   *
+   *   {
+   *     "extensions": ["nix"],
+   *     "platform": ["!windows"],
+   *   }
+   *
+   *
+   * @example
+   *   Add the `-cg` flag for `**\dev\*.v` files.
+   *
+   *   {
+   *     "directories": ["dev"],
+   *     "flags": ["-cg"],
+   *   }
+   *
+   */
+  "magic_if": [],
+
+  /*
+   * The path to the `v` compiler.
+   */
+  "compiler": "v"
 }
