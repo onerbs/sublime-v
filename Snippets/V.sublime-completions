@@ -15,7 +15,7 @@
     { "trigger": "ss", "contents": "struct $1 {\n\t$0\n}" },
     { "trigger": "tt", "contents": "interface $1 {\n\t$0\n}" },
 
-    { "trigger": "fn", "contents": "// $1 $4\nfn $1($2) ?$3 {\n\t$0\n}" },
+    { "trigger": "fn", "contents": "fn $1($2) ?$3 {\n\t$0\n}" },
     { "trigger": "pfn", "contents": "// $1 $4\npub fn $1($2) ?$3 {\n\t$0\n}" },
     { "trigger": "fnt", "contents": "fn test_$1() {\n\t$0\n}" },
 
