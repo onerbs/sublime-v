@@ -7,7 +7,7 @@ foldingStartMarker: '[\{\(]$'
 foldingStopMarker: '^\s*[\)\}]$'
 
 variables:
-  re_attrib: (console|deprecated|direct_array_access|flag|heap|if|inline|keep_args_alive|live|manualfree|noinit|noreturn|ref_only|trusted|typedef|unsafe|windows_stdcall)
+  re_attrib: (console|deprecated|direct_array_access|flag|heap|inline|keep_args_alive|live|manualfree|noinit|noreturn|ref_only|trusted|typedef|unsafe|windows_stdcall)
   re_builtin: (dump|exit|error|isnil|panic|e?print(?:ln)?|print_backtrace)
   re_type_numeric: (byte|u16|u32|u64|u128|i8|i16|int|i64|i128|f32|f64)
   re_type_primitive: (any|bool|cha[rn]|rune|u?string|size_t|voidptr)
@@ -29,10 +29,18 @@ contexts:
     - include: Enum
     - include: Struct
     - include: Function
-    - match: ^\[
+    - match: \[
       scope: punctuation.definition.attribute.begin.v
       push:
         - include: String
+        - match: \b(if)\b
+          scope: keyword.language.attribute.conditional.v
+        - match: (!)
+          scope: keyword.operator.logical.v
+        - match: (\w+)\s*(\?)
+          captures:
+            1: keyword.language.d_flag.v
+            2: punctuation.v
         - match: \b{{re_attrib}}\b
           scope: keyword.language.attribute.v
         - match: '[:;]'
