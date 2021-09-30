@@ -171,9 +171,19 @@ contexts:
           scope: constant.c-interop.v
         - match: \.
           scope: punctuation.accessor.v
-        - match: \b({{re_name_class}})\b
-          scope: entity.name.class.v
-        - include: Block
+        - include: Type
+        - match: \{
+          scope: punctuation.definition.block.begin.v
+          push:
+            - match: (\[)(required)(\])
+              captures:
+                1: punctuation.definition.attribute.begin.v
+                2: keyword.language.attribute.v
+                3: punctuation.definition.attribute.end.v
+            - include: Value
+            - match: \}
+              scope: punctuation.definition.block.end.v
+              pop: true
         - include: EOL
 
   Function:
