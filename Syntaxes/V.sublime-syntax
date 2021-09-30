@@ -390,7 +390,6 @@ contexts:
       push:
         - meta_scope: comment.line.v
         - include: CommentTag
-        - include: CommentBlock
         - include: EOL
 
   CommentTag:
