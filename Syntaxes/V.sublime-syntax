@@ -520,13 +520,11 @@ contexts:
       scope: constant.numeric.octal.v
     - match: \b(0x[\h_]+)\b
       scope: constant.numeric.hexadecimal.v
-    - match: \b([\d_]+\.[\d_]+)(\.\d+)*\b
-      captures:
-        1: constant.numeric.decimal.v
-        2: invalid.illegal.v
+    - match: \b([\d_]+\.[\d_]+)(\.+\d+)+\b
+      scope: invalid.illegal.v
     - match: \b([\d_]+)\b
       scope: constant.numeric.v
 
   EOL:
-    - match: $
+    - match: ($)
       pop: true
