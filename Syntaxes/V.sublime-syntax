@@ -7,10 +7,10 @@ foldingStartMarker: '[\{\(]$'
 foldingStopMarker: '^\s*[\)\}]$'
 
 variables:
-  re_attrib: (console|deprecated|direct_array_access|flag|heap|inline|keep_args_alive|live|manualfree|noinit|noreturn|ref_only|trusted|typedef|unsafe|windows_stdcall)
-  re_builtin: (dump|exit|error|isnil|panic|e?print(?:ln)?|print_backtrace)
-  re_type_numeric: (byte|u16|u32|u64|u128|i8|i16|int|i64|i128|f32|f64)
-  re_type_primitive: (any|bool|cha[rn]|rune|u?string|size_t|voidptr)
+  re_attrib: (callconv|console|deprecated|direct_array_access|flag|heap|inline|keep_args_alive|live|manualfree|markused|noinit|noinline|noreturn|params|ref_only|trusted|typedef|unsafe|windows_stdcall)
+  re_builtin: (dump|exit|error|flush_std(?:err|out)|free|isnil|panic|e?print(?:ln)?|print_backtrace|sizeof|typeof|(?:malloc|memdup|vcalloc)(?:_noscan)?|realloc_data|v_realloc|vstrlen(?:_char)?|vmem(?:cpy|move|cmp|set))
+  re_type_numeric: (byte|u8|u16|u32|u64|u128|i8|i16|i32|int|i64|i128|f32|f64)
+  re_type_primitive: (any|bool|cha[rn]|rune|u?string|[iu]size|voidptr)
   re_name_class: '[A-Z][A-Za-z\d_]*'
   re_name_regular: '[a-z][a-z\d_]*'
 
@@ -18,7 +18,7 @@ variables:
   # re_ct_compiler: (clang|cplusplus|gcc|mingw|msvc|tinyc)
   # re_ct_platform: (aarch64|amd64|(big|little)_endian|x32|x64)
   # re_ct_other: (debug|glibc|js|no_bounds_checking|prealloc|prod|test)
-  re_ct_token: (COLUMN|FILE|FN|LINE|METHOD|MOD|STRUCT|VEXE|VHASH|VMOD_FILE|VROOT)
+  re_ct_token: (COLUMN|FILE|FILE_LINE|FN|LINE|LOCATION|METHOD|MOD|STRUCT|VEXE|VEXEROOT|VCURRENTHASH|VHASH|VMOD_FILE|VMODROOT)
 
 contexts:
   main:
@@ -372,8 +372,10 @@ contexts:
       scope: keyword.operator.logical.v
     - match: \&
       scope: storage.modifier.reference.v
+    - match: \!
+      scope: storage.modifier.returnType.v
     - match: \?
-      scope: storage.modifier.optional.v
+      scope: storage.modifier.optionType.v
     - match: (\*)({{re_name_regular}})
       captures:
         1: storage.modifier.dereference.v
