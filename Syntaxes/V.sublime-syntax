@@ -7,10 +7,10 @@ foldingStartMarker: '[\{\(]$'
 foldingStopMarker: '^\s*[\)\}]$'
 
 variables:
-  re_attrib: (callconv|console|deprecated|direct_array_access|flag|heap|inline|keep_args_alive|live|manualfree|markused|noinit|noinline|noreturn|params|ref_only|trusted|typedef|unsafe|windows_stdcall)
+  re_attrib: (assert_continues|callconv|console|deprecated|direct_array_access|flag|heap|inline|keep_args_alive|live|manualfree|markused|noinit|noinline|noreturn|params|ref_only|trusted|typedef|unsafe|windows_stdcall)
   re_builtin: (dump|exit|error|flush_std(?:err|out)|free|isnil|panic|e?print(?:ln)?|print_backtrace|sizeof|typeof|(?:malloc|memdup|vcalloc)(?:_noscan)?|realloc_data|v_realloc|vstrlen(?:_char)?|vmem(?:cpy|move|cmp|set))
   re_type_numeric: (byte|u8|u16|u32|u64|u128|i8|i16|i32|int|i64|i128|f32|f64)
-  re_type_primitive: (any|bool|cha[rn]|rune|u?string|[iu]size|voidptr)
+  re_type_primitive: (any|bool|cha[rn]|rune|thread|u?string|[iu]size|voidptr)
   re_name_class: '[A-Z][A-Za-z\d_]*'
   re_name_regular: '[a-z][a-z\d_]*'
 
@@ -175,7 +175,7 @@ contexts:
         - match: \{
           scope: punctuation.definition.block.begin.v
           push:
-            - match: (\[)(required)(\])
+            - match: (\[)(json|required|skip)(\])
               captures:
                 1: punctuation.definition.attribute.begin.v
                 2: keyword.language.attribute.v
@@ -296,7 +296,7 @@ contexts:
     - match: \b(if|else|for|match|select|return|break|continue|defer)\b
       scope: keyword.control.flow.v
 
-    - match: \b(asm|assert|atomic|embed|go(to)?|or|r?lock|shared|sizeof|static|typeof|union|unsafe)\b
+    - match: \b(asm|assert|atomic|embed|go(to)?|or|r?lock|shared|sizeof|spawn|static|typeof|union|unsafe)\b
       scope: keyword.language.v
 
       # Constants
